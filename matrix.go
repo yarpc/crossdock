@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 type Matrix struct {
@@ -72,6 +73,9 @@ func ExecuteTestCase(testCase TestCase) Result {
 	params.Add("behavior", testCase.Behavior)
 	callUrl.RawQuery = params.Encode()
 
+	// Produce TAP header
+	fmt.Printf("# %s %s %s\n", testCase.Client, testCase.Server, testCase.Behavior)
+
 	resp, err := http.Get(callUrl.String())
 	if err != nil {
 		log.Fatal(err)
@@ -82,14 +86,24 @@ func ExecuteTestCase(testCase TestCase) Result {
 		log.Fatal(err)
 	}
 
-	status := Success
+	sbody := string(body)
+	status := Skipped
 	if resp.StatusCode != 200 {
 		status = Failed
+		fmt.Printf("not ok - harness responded with HTTP error %s\n", resp.StatusCode)
+	} else if strings.HasPrefix(sbody, "not ok ") {
+		status = Failed
+		fmt.Printf("%s\n", sbody)
+	} else if strings.HasPrefix(sbody, "ok ") {
+		status = Success
+		fmt.Printf("%s\n", sbody)
+	} else {
+		fmt.Printf("%s\n", sbody)
 	}
 
 	return Result{
 		TestCase: testCase,
 		Status:   status,
-		Response: string(body),
+		Response: sbody,
 	}
 }
