@@ -1,3 +1,4 @@
 package: github.com/yarpc/xlang
 import:
 - package: github.com/olekukonko/tablewriter
+- package: github.com/golang/lint

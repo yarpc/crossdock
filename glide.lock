@@ -1,8 +1,16 @@
-hash: 3d4edd55ea5ad89763e208347b31dac86d999bf93c182ae402ebb5740b7a2baa
-updated: 2016-01-29T16:45:45.485465619-08:00
+hash: e356f36cfba15cafd6c71857105e130f4d68f6b47ca2a4d72f1372925bb1e309
+updated: 2016-02-01T20:00:26.752803309-08:00
 imports:
+- name: github.com/golang/lint
+  version: 32a87160691b3c96046c0c678fe57c5bef761456
 - name: github.com/mattn/go-runewidth
   version: e882a96ec18dd43fa283187b66af74497c9101c0
 - name: github.com/olekukonko/tablewriter
   version: cca8bbc0798408af109aaaa239cbd2634846b340
+- name: golang.org/x/tools
+  version: b47dfd93e5c47f9311ab20047c690df78d460f75
+  subpackages:
+  - go/gcimporter
+  - go/types
+  - go/exact
 devImports: []
