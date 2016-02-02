@@ -5,18 +5,23 @@ project := xlang
 install:
 	glide --version || go get github.com/Masterminds/glide
 	GO15VENDOREXPERIMENT=1 glide install
-	GO15VENDOREXPERIMENT=1 go build `GO15VENDOREXPERIMENT=1 glide novendor`
+	GO15VENDOREXPERIMENT=1 go build `glide novendor`
 
 
 .PHONY: test
-test:
-	GO15VENDOREXPERIMENT=1 go test `GO15VENDOREXPERIMENT=1 glide novendor`
+test: lint
+	GO15VENDOREXPERIMENT=1 go test `glide novendor`
+
+
+.PHONY: lint
+lint:
+	go list . | xargs golint
+	go list . | xargs go vet
 
 
 .PHONY: xlang
 xlang:
 	docker-compose run xlang
-
 
 .PHONY: xlang-fresh
 xlang-fresh:
