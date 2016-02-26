@@ -6,30 +6,32 @@ import (
 	"os"
 
 	"github.com/olekukonko/tablewriter"
+
+	"github.com/yarpc/crossdock/execute"
 )
 
 // Output results to the console
-func Output(results []Result) {
-	if len(results) == 0 {
+func Output(final execute.FinalResult) {
+	if len(final.Results) == 0 {
 		log.Fatal("no results...")
 	}
 
 	var headers []string
-	for key := range results[0].TestCase.Arguments {
+	for key := range final.Results[0].TestCase.Arguments {
 		headers = append(headers, key)
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
 
-	for _, result := range results {
+	for _, result := range final.Results {
 		var row []string
 
 		switch result.Status {
-		case Success:
+		case execute.Success:
 			row = append(row, "PASSED")
-		case Failed:
+		case execute.Failed:
 			row = append(row, "FAILED")
-		case Skipped:
+		case execute.Skipped:
 			row = append(row, "SKIPPED")
 		}
 

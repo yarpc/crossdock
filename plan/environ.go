@@ -5,11 +5,18 @@ import (
 	"strings"
 )
 
-const clientsKey = "CROSSDOCK_CLIENTS"
-const axisKeyPrefix = "CROSSDOCK_AXIS_"
-
-// ReadFromEnviron creates a Plan by looking for CROSSDOCK_ environment vars
+// ReadFromEnviron creates a Plan based on environment vars
 func ReadFromEnviron() Plan {
+	config := ReadConfigFromEnviron()
+	plan := New(config)
+	return plan
+}
+
+// ReadConfigFromEnviron creates a Config by looking for CROSSDOCK_ environment vars
+func ReadConfigFromEnviron() Config {
+	const clientsKey = "CROSSDOCK_CLIENTS"
+	const axisKeyPrefix = "CROSSDOCK_AXIS_"
+
 	clients := strings.Split(os.Getenv(clientsKey), ",")
 	var axes []Axis
 
@@ -30,10 +37,10 @@ func ReadFromEnviron() Plan {
 		axes = append(axes, axis)
 	}
 
-	plan := Plan{
+	config := Config{
 		Clients: clients,
 		Axes:    axes,
 	}
 
-	return plan
+	return config
 }
