@@ -10,12 +10,6 @@ import (
 	"github.com/yarpc/crossdock/plan"
 )
 
-// Axis represents combinational args to be passed to the test clients
-type Axis struct {
-	Name   string
-	Values []string
-}
-
 // Result contains replies from test clients
 type Result struct {
 	TestCase TestCase
