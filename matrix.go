@@ -24,7 +24,7 @@ type Matrix struct {
 type Result struct {
 	TestCase TestCase
 	Status   Status
-	Response string
+	Output   string
 }
 
 // Status is an enum that represents test success/failure
@@ -52,14 +52,13 @@ func Execute(matrix Matrix) []Result {
 func ExecuteCases(cases []TestCase) []Result {
 	var results []Result
 	for _, c := range cases {
-		result := ExecuteCase(c)
-		results = append(results, result)
+		results = append(results, ExecuteCase(c)...)
 	}
 	return results
 }
 
 // ExecuteCase fires an HTTP request to the test client
-func ExecuteCase(c TestCase) Result {
+func ExecuteCase(c TestCase) []Result {
 	callURL, err := url.Parse(fmt.Sprintf("http://%v:8080/", c.Client))
 	if err != nil {
 		log.Fatal(err)
@@ -86,9 +85,9 @@ func ExecuteCase(c TestCase) Result {
 		status = Failed
 	}
 
-	return Result{
+	return []Result{{
 		TestCase: c,
 		Status:   status,
-		Response: string(body),
-	}
+		Output:   string(body),
+	}}
 }

@@ -46,7 +46,7 @@ func WaitForHTTPRequest(host string, cancel <-chan struct{}) {
 
 	err := errors.New("init")
 	for err != nil {
-		req, reqErr := http.NewRequest("GET", url.String(), nil)
+		req, reqErr := http.NewRequest("HEAD", url.String(), nil)
 		if reqErr != nil {
 			log.Printf("Warning: Failed to create request for URL '%s' -  skipping service '%s'",
 				url.String(), host)

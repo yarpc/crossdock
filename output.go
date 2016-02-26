@@ -34,7 +34,7 @@ func Output(results []Result) {
 		}
 
 		row = append(row, result.TestCase.Client)
-		row = append(row, result.Response)
+		row = append(row, result.Output)
 
 		for _, header := range headers {
 			row = append(row, result.TestCase.Arguments[header])
@@ -43,7 +43,7 @@ func Output(results []Result) {
 		table.Append(row)
 	}
 
-	headers = append([]string{"status", "client", "response"}, headers...)
+	headers = append([]string{"status", "client", "output"}, headers...)
 	table.SetHeader(headers)
 	table.SetBorder(false)
 
