@@ -1,5 +1,7 @@
 package main
 
+import "github.com/yarpc/crossdock/plan"
+
 // Arguments represents custom args to pass to test client.
 type Arguments map[string]string
 
@@ -10,17 +12,17 @@ type TestCase struct {
 }
 
 // Collect all TestCases for a given Matrix
-func Collect(matrix Matrix) []TestCase {
+func Collect(plan plan.Plan) []TestCase {
 	var cases []TestCase
-	for _, client := range matrix.Clients {
-		clientTestCases := createCasesForClient(client, matrix.Axes, make(map[string]string))
+	for _, client := range plan.Clients {
+		clientTestCases := createCasesForClient(client, plan.Axes, make(map[string]string))
 		cases = append(cases, clientTestCases...)
 	}
 
 	return cases
 }
 
-func createCasesForClient(client string, axes []Axis, args Arguments) []TestCase {
+func createCasesForClient(client string, axes []plan.Axis, args Arguments) []TestCase {
 	if len(axes) == 0 {
 		return []TestCase{{
 			Client:    client,

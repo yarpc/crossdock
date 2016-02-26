@@ -6,18 +6,14 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+
+	"github.com/yarpc/crossdock/plan"
 )
 
 // Axis represents combinational args to be passed to the test clients
 type Axis struct {
 	Name   string
 	Values []string
-}
-
-// Matrix describes the entirety of the test program
-type Matrix struct {
-	Clients []string
-	Axes    []Axis
 }
 
 // Result contains replies from test clients
@@ -41,9 +37,9 @@ const (
 	Skipped
 )
 
-// Execute the test program for a given Matrix
-func Execute(matrix Matrix) []Result {
-	cases := Collect(matrix)
+// Execute the test program for a given Plan
+func Execute(plan plan.Plan) []Result {
+	cases := Collect(plan)
 	results := ExecuteCases(cases)
 	return results
 }
