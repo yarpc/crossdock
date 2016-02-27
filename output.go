@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/yarpc/crossdock/execute"
 )
@@ -17,6 +18,8 @@ func Output(results <-chan execute.Result) {
 			fmt.Println(subResult)
 		}
 	}
-
-	fmt.Println(passed)
+	if passed == false {
+		fmt.Println("Test suite failed!")
+		os.Exit(1)
+	}
 }
