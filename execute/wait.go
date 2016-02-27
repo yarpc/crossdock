@@ -1,4 +1,4 @@
-package main
+package execute
 
 import (
 	"errors"
@@ -19,7 +19,7 @@ func Wait(hosts []string, timeout time.Duration) {
 	for _, host := range hosts {
 		wg.Add(1)
 		go func(host string) {
-			WaitForHTTPRequest(host, cancel)
+			waitForHTTPRequest(host, cancel)
 			wg.Done()
 		}(fmt.Sprintf("%s:8080", host))
 	}
@@ -37,7 +37,7 @@ func Wait(hosts []string, timeout time.Duration) {
 }
 
 // WaitForHTTPRequest polls host until it can make a request
-func WaitForHTTPRequest(host string, cancel <-chan struct{}) {
+func waitForHTTPRequest(host string, cancel <-chan struct{}) {
 	url := url.URL{
 		Scheme: "http",
 		Host:   host,
