@@ -16,8 +16,6 @@ func TestNew(t *testing.T) {
 	}
 	plan := New(config)
 
-	assert.Equal(t, config, plan.Config)
-
 	assert.Equal(t,
 		[]TestCase{
 			{

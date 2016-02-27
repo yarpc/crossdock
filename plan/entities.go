@@ -23,6 +23,5 @@ type TestCase struct {
 
 // Plan describes the entirety of the test program
 type Plan struct {
-	Config    Config
 	TestCases []TestCase
 }

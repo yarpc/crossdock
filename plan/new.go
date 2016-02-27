@@ -3,7 +3,6 @@ package plan
 // New creates a Plan given a Config
 func New(config Config) Plan {
 	return Plan{
-		Config:    config,
 		TestCases: buildTestCases(config),
 	}
 }
