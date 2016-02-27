@@ -22,7 +22,7 @@ func main() {
 	results := execute.Run(plan)
 
 	if err := output.Stream(results); err != nil {
-		fmt.Println("Tests did not pass!")
+		fmt.Printf("\nTests did not pass!\n\n")
 		os.Exit(1)
 	}
 	fmt.Printf("\nTests passed!\n\n")
