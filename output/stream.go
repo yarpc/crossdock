@@ -1,14 +1,14 @@
-package main
+package output
 
 import (
+	"errors"
 	"fmt"
-	"os"
 
 	"github.com/yarpc/crossdock/execute"
 )
 
-// Output results to the console, if any tests fail exit with non-0
-func Output(results <-chan execute.Result) {
+// Stream results to the console, error at end if any fail
+func Stream(results <-chan execute.Result) error {
 	passed := true
 	for result := range results {
 		for _, subResult := range result.SubResults {
@@ -19,7 +19,7 @@ func Output(results <-chan execute.Result) {
 		}
 	}
 	if passed == false {
-		fmt.Println("Test suite failed!")
-		os.Exit(1)
+		return errors.New("one or more tests failed")
 	}
+	return nil
 }

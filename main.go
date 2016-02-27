@@ -2,9 +2,11 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/yarpc/crossdock/execute"
+	"github.com/yarpc/crossdock/output"
 	"github.com/yarpc/crossdock/plan"
 )
 
@@ -18,5 +20,9 @@ func main() {
 
 	fmt.Printf("\nExecuting Matrix...\n\n")
 	results := execute.Run(plan)
-	Output(results)
+
+	if err := output.Stream(results); err != nil {
+		fmt.Println("Tests did not pass!")
+		os.Exit(1)
+	}
 }
