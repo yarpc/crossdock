@@ -8,12 +8,12 @@ func New(config Config) Plan {
 }
 
 func buildTestCases(config Config) []TestCase {
-	var cases []TestCase
+	var testCases []TestCase
 	for _, client := range config.Clients {
-		clientTestCases := recurseCombinations(client, config.Axes, make(map[string]string))
-		cases = append(cases, clientTestCases...)
+		combos := recurseCombinations(client, config.Axes, make(map[string]string))
+		testCases = append(testCases, combos...)
 	}
-	return cases
+	return testCases
 }
 
 func recurseCombinations(client string, axes []Axis, args Arguments) []TestCase {
