@@ -12,10 +12,10 @@ func TestReadConfigFromEnviron(t *testing.T) {
 	os.Setenv("CROSSDOCK_AXIS_SERVER", "yarpc-go,yarpc-node")
 	os.Setenv("CROSSDOCK_AXIS_TRANSPORT", "http,tchannel")
 
-	plan := ReadConfigFromEnviron()
+	config := ReadConfigFromEnviron()
 
-	assert.Equal(t, plan.Clients, []string{"yarpc-go", "yarpc-node", "yarpc-browser"})
-	assert.Equal(t, plan.Axes, []Axis{
+	assert.Equal(t, config.Clients, []string{"yarpc-go", "yarpc-node", "yarpc-browser"})
+	assert.Equal(t, config.Axes, []Axis{
 		{Name: "server", Values: []string{"yarpc-go", "yarpc-node"}},
 		{Name: "transport", Values: []string{"http", "tchannel"}},
 	})
