@@ -1,55 +1,25 @@
 crossdock:
     build: .
     links:
-        - yarpc-go
-        - yarpc-java
-        - yarpc-python
-        - yarpc-node
-        - yarpc-erlang
+        - alpha
+        - omega
     environment:
-        - CROSSDOCK_MAX_WAIT=10
-        - CROSSDOCK_CLIENTS=yarpc-go,yarpc-java,yarpc-python,yarpc-node,yarpc-erlang
-        - CROSSDOCK_AXIS_SERVER=yarpc-go,yarpc-java,yarpc-python,yarpc-node,yarpc-erlang
-        - CROSSDOCK_AXIS_BEHAVIOR=call,not_found
-        - CROSSDOCK_AXIS_TRANSPORT=tchannel,http
+        - CROSSDOCK_CLIENTS=alpha,omega
+        - CROSSDOCK_AXIS_BEHAVIOR=dance,sing
 
-yarpc-go:
+alpha:
     image: breerly/hello-server
     ports:
         - 8080
     environment:
         - HELLO_SLEEP=1
         - HELLO_PORT=8080
-        - HELLO_MESSAGE='[{"status":"passed","output":"hi"}]'
+        - HELLO_MESSAGE=[{"status":"passed","output":"sup"}]
 
-yarpc-java:
+omega:
     image: breerly/hello-server
     ports:
         - 8080
     environment:
         - HELLO_PORT=8080
-        - HELLO_MESSAGE='[{"status":"skipped","output":"hi"}]'
-
-yarpc-python:
-    image: breerly/hello-server
-    ports:
-        - 8080
-    environment:
-        - HELLO_PORT=8080
-        - HELLO_MESSAGE='[{"status":"failed","output":"hi"}]'
-
-yarpc-node:
-    image: breerly/hello-server
-    ports:
-        - 8080
-    environment:
-        - HELLO_PORT=8080
-        - HELLO_MESSAGE='ok - not agreed format'
-
-yarpc-erlang:
-    image: breerly/hello-server
-    ports:
-        - 8080
-    environment:
-        - HELLO_PORT=8080
-        - HELLO_STATUS_CODE=404
+        - HELLO_MESSAGE=[{"status":"skipped","output":"sup"}]
