@@ -11,19 +11,19 @@ import (
 )
 
 // Output results to the console
-func Output(final execute.FinalResult) {
-	if len(final.Results) == 0 {
+func Output(results []execute.Result) {
+	if len(results) == 0 {
 		log.Fatal("no results...")
 	}
 
 	var headers []string
-	for key := range final.Results[0].TestCase.Arguments {
+	for key := range results[0].TestCase.Arguments {
 		headers = append(headers, key)
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
 
-	for _, result := range final.Results {
+	for _, result := range results {
 		var row []string
 
 		switch result.Status {

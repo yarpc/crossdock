@@ -2,12 +2,6 @@ package execute
 
 import "github.com/yarpc/crossdock/plan"
 
-// FinalResult summarizes the entire test run
-type FinalResult struct {
-	Passed  bool
-	Results []Result
-}
-
 // Result contains replies from test clients
 type Result struct {
 	TestCase plan.TestCase

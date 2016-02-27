@@ -11,20 +11,16 @@ import (
 )
 
 // Run the test program for a given Plan
-func Run(plan plan.Plan) FinalResult {
+func Run(plan plan.Plan) []Result {
 	var results []Result
 	for _, c := range plan.TestCases {
-		results = append(results, executeCase(c)...)
+		results = append(results, executeTestCase(c)...)
 	}
-	final := FinalResult{
-		Passed:  true,
-		Results: results,
-	}
-	return final
+
+	return results
 }
 
-// ExecuteCase fires an HTTP request to the test client
-func executeCase(c plan.TestCase) []Result {
+func executeTestCase(c plan.TestCase) []Result {
 	callURL, err := url.Parse(fmt.Sprintf("http://%v:8080/", c.Client))
 	if err != nil {
 		log.Fatal(err)

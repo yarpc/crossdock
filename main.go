@@ -18,7 +18,7 @@ func main() {
 
 	fmt.Printf("\nExecuting Matrix...\n\n")
 
-	result := execute.Run(plan)
+	results := execute.Run(plan)
 
-	Output(result)
+	Output(results)
 }
