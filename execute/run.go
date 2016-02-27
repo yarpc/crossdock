@@ -15,16 +15,14 @@ func Run(plan plan.Plan) <-chan Result {
 	results := make(chan Result, 100)
 	go func() {
 		for _, c := range plan.TestCases {
-			for _, result := range executeTestCase(c) {
-				results <- result
-			}
+			results <- executeTestCase(c)
 		}
 		close(results)
 	}()
 	return results
 }
 
-func executeTestCase(c plan.TestCase) []Result {
+func executeTestCase(c plan.TestCase) Result {
 	callURL, err := url.Parse(fmt.Sprintf("http://%v:8080/", c.Client))
 	if err != nil {
 		log.Fatal(err)
@@ -51,9 +49,13 @@ func executeTestCase(c plan.TestCase) []Result {
 		status = Failed
 	}
 
-	return []Result{{
-		TestCase: c,
-		Status:   status,
-		Output:   string(body),
+	subResults := []SubResult{{
+		Status: status,
+		Output: string(body),
 	}}
+
+	return Result{
+		TestCase:   c,
+		SubResults: subResults,
+	}
 }

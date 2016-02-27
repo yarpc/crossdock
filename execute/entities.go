@@ -2,11 +2,16 @@ package execute
 
 import "github.com/yarpc/crossdock/plan"
 
-// Result contains replies from test clients
+// Result contains total reply from test client
 type Result struct {
-	TestCase plan.TestCase
-	Status   Status
-	Output   string
+	TestCase   plan.TestCase
+	SubResults []SubResult
+}
+
+// SubResult contains result from test client
+type SubResult struct {
+	Status Status
+	Output string
 }
 
 // Status is an enum that represents test success/failure

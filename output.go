@@ -9,6 +9,8 @@ import (
 // Output results to the console
 func Output(results <-chan execute.Result) {
 	for result := range results {
-		fmt.Println(result)
+		for _, subResult := range result.SubResults {
+			fmt.Println(subResult)
+		}
 	}
 }
