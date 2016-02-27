@@ -7,7 +7,7 @@ import (
 	"github.com/yarpc/crossdock/execute"
 )
 
-// Output results to the console
+// Output results to the console, if any tests fail exit with non-0
 func Output(results <-chan execute.Result) {
 	passed := true
 	for result := range results {

@@ -3,7 +3,6 @@ package execute
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 
@@ -22,40 +21,62 @@ func Run(plan plan.Plan) <-chan Result {
 	return results
 }
 
-func executeTestCase(c plan.TestCase) Result {
-	callURL, err := url.Parse(fmt.Sprintf("http://%v:8080/", c.Client))
+func executeTestCase(testCase plan.TestCase) Result {
+	result := Result{
+		TestCase: testCase,
+	}
+
+	response, err := makeRequest(testCase)
 	if err != nil {
-		log.Fatal(err)
+		result.SubResults = []SubResult{{
+			Status: Failed,
+			Output: fmt.Sprintf("err: %v", err),
+		}}
+		return result
+	}
+
+	result.SubResults = []SubResult{{
+		Status: Success,
+		Output: response,
+	}}
+
+	return result
+}
+
+func makeRequest(testCase plan.TestCase) (string, error) {
+	callURL, err := url.Parse(fmt.Sprintf("http://%v:8080/", testCase.Client))
+	if err != nil {
+		return "", err
 	}
 
 	args := url.Values{}
-	for k, v := range c.Arguments {
+	for k, v := range testCase.Arguments {
 		args.Add(k, v)
 	}
 	callURL.RawQuery = args.Encode()
 
 	resp, err := http.Get(callURL.String())
 	if err != nil {
-		log.Fatal(err)
+		return "", err
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		return "", err
 	}
 
-	status := Success
 	if resp.StatusCode != 200 {
-		status = Failed
+		return "", fmt.Errorf("wanted status code 200, got %v", resp.StatusCode)
 	}
 
-	subResults := []SubResult{{
-		Status: status,
-		Output: string(body),
-	}}
+	return string(body), nil
+}
 
-	return Result{
-		TestCase:   c,
-		SubResults: subResults,
-	}
+type jsonResponse struct {
+	SubResults []jsonSubResponse
+}
+
+type jsonSubResponse struct {
+	Status string `json:"status"`
+	Output string `json:"output"`
 }
