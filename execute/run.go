@@ -1,6 +1,7 @@
 package execute
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -22,25 +23,32 @@ func Run(plan plan.Plan) <-chan Result {
 }
 
 func executeTestCase(testCase plan.TestCase) Result {
-	result := Result{
-		TestCase: testCase,
-	}
-
 	response, err := makeRequest(testCase)
 	if err != nil {
-		result.SubResults = []SubResult{{
-			Status: Failed,
-			Output: fmt.Sprintf("err: %v", err),
-		}}
-		return result
+		return Result{
+			TestCase: testCase,
+			SubResults: []SubResult{{
+				Status: Failed,
+				Output: fmt.Sprintf("err: %v", err),
+			}},
+		}
 	}
 
-	result.SubResults = []SubResult{{
-		Status: Success,
-		Output: response,
-	}}
+	var subResponses []subResponse
+	if err := json.Unmarshal([]byte(response), &subResponses); err != nil {
+		return Result{
+			TestCase: testCase,
+			SubResults: []SubResult{{
+				Status: Failed,
+				Output: fmt.Sprintf("err: %v", err),
+			}},
+		}
+	}
 
-	return result
+	return Result{
+		TestCase:   testCase,
+		SubResults: toSubResults(subResponses),
+	}
 }
 
 func makeRequest(testCase plan.TestCase) (string, error) {
@@ -72,11 +80,26 @@ func makeRequest(testCase plan.TestCase) (string, error) {
 	return string(body), nil
 }
 
-type jsonResponse struct {
-	SubResults []jsonSubResponse
+type subResponse struct {
+	Status string
+	Output string
 }
 
-type jsonSubResponse struct {
-	Status string `json:"status"`
-	Output string `json:"output"`
+func toSubResults(subResponses []subResponse) []SubResult {
+	var subResults []SubResult
+	for _, subResponse := range subResponses {
+		status := Failed
+		switch subResponse.Status {
+		case "passed":
+			status = Success
+		case "skipped":
+			status = Skipped
+		}
+		subResult := SubResult{
+			Status: status,
+			Output: subResponse.Output,
+		}
+		subResults = append(subResults, subResult)
+	}
+	return subResults
 }
