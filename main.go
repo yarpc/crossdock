@@ -25,4 +25,5 @@ func main() {
 		fmt.Println("Tests did not pass!")
 		os.Exit(1)
 	}
+	fmt.Printf("\nTests passed!\n\n")
 }

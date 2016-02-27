@@ -9,16 +9,23 @@ import (
 
 // Stream results to the console, error at end if any fail
 func Stream(results <-chan execute.Result) error {
-	passed := true
+	failed := false
 	for result := range results {
 		for _, subResult := range result.SubResults {
-			if subResult.Status == execute.Failed {
-				passed = false
+			var statStr string
+			switch subResult.Status {
+			case execute.Success:
+				statStr = "PASSED"
+			case execute.Skipped:
+				statStr = "SKIPPED"
+			default:
+				statStr = "FAILED"
+				failed = true
 			}
-			fmt.Println(subResult)
+			fmt.Printf("%v - %v - %v\n", statStr, result.TestCase, subResult.Output)
 		}
 	}
-	if passed == false {
+	if failed == true {
 		return errors.New("one or more tests failed")
 	}
 	return nil
