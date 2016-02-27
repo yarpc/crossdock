@@ -10,15 +10,12 @@ import (
 
 func main() {
 	fmt.Printf("\nCrossdock starting...\n\n")
-
 	plan := plan.ReadFromEnviron()
 
 	fmt.Printf("Waiting on CROSSDOCK_CLIENTS=%v\n\n", plan.Config.Clients)
 	Wait(plan.Config.Clients, time.Duration(30)*time.Second)
 
 	fmt.Printf("\nExecuting Matrix...\n\n")
-
 	results := execute.Run(plan)
-
 	Output(results)
 }

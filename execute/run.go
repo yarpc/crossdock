@@ -11,12 +11,16 @@ import (
 )
 
 // Run the test program for a given Plan
-func Run(plan plan.Plan) []Result {
-	var results []Result
-	for _, c := range plan.TestCases {
-		results = append(results, executeTestCase(c)...)
-	}
-
+func Run(plan plan.Plan) <-chan Result {
+	results := make(chan Result, 100)
+	go func() {
+		for _, c := range plan.TestCases {
+			for _, result := range executeTestCase(c) {
+				results <- result
+			}
+		}
+		close(results)
+	}()
 	return results
 }
 
