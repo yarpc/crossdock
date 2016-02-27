@@ -5,13 +5,6 @@ import (
 	"strings"
 )
 
-// ReadFromEnviron creates a Plan based on environment vars
-func ReadFromEnviron() Plan {
-	config := ReadConfigFromEnviron()
-	plan := New(config)
-	return plan
-}
-
 // ReadConfigFromEnviron creates a Config by looking for CROSSDOCK_ environment vars
 func ReadConfigFromEnviron() Config {
 	const clientsKey = "CROSSDOCK_CLIENTS"
