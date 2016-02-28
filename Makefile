@@ -12,7 +12,7 @@ install:
 
 .PHONY: test
 test:
-	go test -dvr.replay `glide novendor`
+	go test `glide novendor`
 
 
 .PHONY: clean
