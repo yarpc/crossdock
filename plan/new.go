@@ -1,5 +1,7 @@
 package plan
 
+import "fmt"
+
 // New creates a Plan given a Config
 func New(config *Config) *Plan {
 	plan := &Plan{
@@ -11,15 +13,19 @@ func New(config *Config) *Plan {
 
 func buildTestCases(plan *Plan) []TestCase {
 	var testCases []TestCase
-	for _, client := range plan.Config.Clients {
-		combos := recurseCombinations(plan, client, plan.Config.Axes, make(map[string]string))
-		testCases = append(testCases, combos...)
+	for _, behavior := range plan.Config.Behaviors {
+		for _, client := range plan.Config.Axes[behavior.Clients].Values {
+			fmt.Println(behavior)
+			combos := recurseCombinations(0, plan, client, behavior, map[string]string{"behavior": behavior.Name})
+			testCases = append(testCases, combos...)
+		}
 	}
 	return testCases
 }
 
-func recurseCombinations(plan *Plan, client string, axes []Axis, args Arguments) []TestCase {
-	if len(axes) == 0 {
+func recurseCombinations(level int, plan *Plan, client string, behavior Behavior, args Arguments) []TestCase {
+	fmt.Println(args, level, len(behavior.Params))
+	if level == len(behavior.Params) {
 		return []TestCase{{
 			Plan:      plan,
 			Client:    client,
@@ -27,10 +33,10 @@ func recurseCombinations(plan *Plan, client string, axes []Axis, args Arguments)
 		}}
 	}
 	var testCases []TestCase
-	axis := axes[0]
-	for _, p := range axis.Values {
-		args[axis.Name] = p
-		testCases = append(testCases, recurseCombinations(plan, client, axes[1:], args)...)
+	param := behavior.Params[level]
+	for _, axis := range plan.Config.Axes[param].Values {
+		args[param] = axis
+		testCases = append(testCases, recurseCombinations(level+1, plan, client, behavior, args)...)
 	}
 	return testCases
 }

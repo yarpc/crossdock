@@ -5,14 +5,22 @@ import "time"
 // Config describes the unstructured test plan
 type Config struct {
 	CallTimeout time.Duration
-	Clients     []string
-	Axes        []Axis
+	Waiters     []string
+	Axes        map[string]Axis
+	Behaviors   map[string]Behavior
 }
 
 // Axis represents combinational args to be passed to the test clients
 type Axis struct {
 	Name   string
 	Values []string
+}
+
+// Behavior represents the test behavior will be triggered by crossdock
+type Behavior struct {
+	Name    string
+	Clients string
+	Params  []string
 }
 
 // Plan describes the entirety of the test program

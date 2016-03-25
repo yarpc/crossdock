@@ -1,6 +1,8 @@
-hash: a9ed92449114cbbd11060d51558da53106f9168adb7aa560f0d599259205db0f
-updated: 2016-03-16T13:26:08.367578262-07:00
+hash: ac984a5ab1b8c66789464fd2b303451c9cc5856f010399b4cad1715c184f7711
+updated: 2016-03-25T12:00:23.982140744-07:00
 imports:
+- name: github.com/bradfitz/slice
+  version: a665b5dbaad5fc7474c1193c67ed138df1e1b0e7
 - name: github.com/davecgh/go-spew
   version: 2df174808ee097f90d259e432cc04442cf60be21
   subpackages:
@@ -23,36 +25,9 @@ imports:
   - assert
   - http
   - mock
-- name: golang.org/x/crypto
-  version: 6025851c7c2bf210daf74d22300c699b16541847
-  subpackages:
-  - ssh/terminal
 - name: golang.org/x/net
   version: 35b06af0720201bc2f326773a80767387544f8c4
   subpackages:
   - context
-  - html/atom
-  - http2/hpack
-  - internal/iana
-  - ipv4
-  - ipv6
-  - webdav/internal/xml
-- name: golang.org/x/text
-  version: 1b466db55e0ba5d56ef5315c728216b42f796491
-  subpackages:
-  - encoding
-  - encoding/charmap
-  - encoding/htmlindex
-  - transform
-  - encoding/internal/identifier
-  - encoding/internal
-  - encoding/japanese
-  - encoding/korean
-  - encoding/simplifiedchinese
-  - encoding/traditionalchinese
-  - encoding/unicode
-  - language
-  - internal/utf8internal
-  - runes
-  - internal/tag
+  - context/ctxhttp
 devImports: []
