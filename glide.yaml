@@ -8,4 +8,3 @@ import:
 - package: golang.org/x/net
   subpackages:
   - context
-- package: github.com/bradfitz/slice
