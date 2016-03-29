@@ -3,13 +3,12 @@ package plan
 import (
 	"testing"
 
-	"github.com/bradfitz/slice"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestNew(t *testing.T) {
 	plan := New(&Config{
-		Waiters: []string{"alpha", "omega"},
+		WaitForHosts: []string{"alpha", "omega"},
 		Axes: map[string]Axis{
 			"client":    {Name: "client", Values: []string{"alpha", "omega"}},
 			"server":    {Name: "server", Values: []string{"alpha", "omega"}},
@@ -25,7 +24,7 @@ func TestNew(t *testing.T) {
 				Params:  []string{"server", "transport"},
 			}}})
 
-	slice.Sort(plan.TestCases, func(i, j int) bool {
+	plan.Sort(func(i, j int) bool {
 		if plan.TestCases[i].Client != plan.TestCases[j].Client {
 			return plan.TestCases[i].Client < plan.TestCases[j].Client
 		}

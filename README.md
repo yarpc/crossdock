@@ -24,8 +24,10 @@ crossdock:
         - omega
     environment:
         - CROSSDOCK_WAIT_FOR=alpha,omega
+
         - CROSSDOCK_AXIS_CLIENTS=alpha,omega
         - CROSSDOCK_AXIS_SPEED=fast,slow
+
         - CROSSDOCK_BEHAVIOR_DANCE=clients,speed
         - CROSSDOCK_BENAVIOR_RUN=clients,speed
 

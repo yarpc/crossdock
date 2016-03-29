@@ -40,5 +40,5 @@ func TestReadConfigFromEnvironTrimsWhitespace(t *testing.T) {
 
 	config := ReadConfigFromEnviron()
 
-	assert.Equal(t, config.Waiters, []string{"alpha", "omega"})
+	assert.Equal(t, config.WaitForHosts, []string{"alpha", "omega"})
 }

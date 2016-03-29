@@ -1,7 +1,5 @@
 package plan
 
-import "fmt"
-
 // New creates a Plan given a Config
 func New(config *Config) *Plan {
 	plan := &Plan{
@@ -15,7 +13,6 @@ func buildTestCases(plan *Plan) []TestCase {
 	var testCases []TestCase
 	for _, behavior := range plan.Config.Behaviors {
 		for _, client := range plan.Config.Axes[behavior.Clients].Values {
-			fmt.Println(behavior)
 			combos := recurseCombinations(0, plan, client, behavior, map[string]string{"behavior": behavior.Name})
 			testCases = append(testCases, combos...)
 		}
@@ -24,7 +21,6 @@ func buildTestCases(plan *Plan) []TestCase {
 }
 
 func recurseCombinations(level int, plan *Plan, client string, behavior Behavior, args Arguments) []TestCase {
-	fmt.Println(args, level, len(behavior.Params))
 	if level == len(behavior.Params) {
 		return []TestCase{{
 			Plan:      plan,

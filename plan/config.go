@@ -1,7 +1,6 @@
 package plan
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -23,49 +22,56 @@ func ReadConfigFromEnviron() *Config {
 	if callTimeout == 0 {
 		callTimeout = defaultCallTimeout
 	}
-	fmt.Println(os.Getenv(waitKey))
-	waiters := trimCollection(strings.Split(os.Getenv(waitKey), ","))
+
+	WaitForHosts := trimCollection(strings.Split(os.Getenv(waitKey), ","))
 	axes := make(map[string]Axis)
 	behaviors := make(map[string]Behavior)
 	for _, e := range os.Environ() {
 		if strings.HasPrefix(e, axisKeyPrefix) {
-			d := strings.TrimPrefix(e, axisKeyPrefix)
-
-			pair := strings.SplitN(d, "=", 2)
-			key := strings.ToLower(pair[0])
-			values := strings.Split(pair[1], ",")
-			values = trimCollection(values)
-
-			axis := Axis{
-				Name:   key,
-				Values: values,
-			}
-			axes[key] = axis
+			axis := parseAxis(strings.TrimPrefix(e, axisKeyPrefix))
+			axes[axis.Name] = axis
 		} else if strings.HasPrefix(e, behaviorKeyPrefix) {
-			d := strings.TrimPrefix(e, behaviorKeyPrefix)
-
-			pair := strings.SplitN(d, "=", 2)
-			key := strings.ToLower(pair[0])
-			values := strings.Split(pair[1], ",")
-			values = trimCollection(values)
-			behavior := Behavior{
-				Name:    key,
-				Clients: values[0],
-				Params:  values[1:],
-			}
-
-			behaviors[key] = behavior
+			behavior := parseBehavior(strings.TrimPrefix(e, behaviorKeyPrefix))
+			behaviors[behavior.Name] = behavior
 		}
 	}
 	config := &Config{
-		CallTimeout: time.Duration(callTimeout),
-		Waiters:     waiters,
-		Axes:        axes,
-		Behaviors:   behaviors,
+		CallTimeout:  time.Duration(callTimeout),
+		WaitForHosts: WaitForHosts,
+		Axes:         axes,
+		Behaviors:    behaviors,
 	}
 
 	validateConfig(config)
 	return config
+}
+
+func parseBehavior(d string) Behavior {
+	pair := strings.SplitN(d, "=", 2)
+	key := strings.ToLower(pair[0])
+	values := strings.Split(pair[1], ",")
+	values = trimCollection(values)
+	behavior := Behavior{
+		Name:    key,
+		Clients: values[0],
+		Params:  values[1:],
+	}
+
+	return behavior
+}
+
+func parseAxis(d string) Axis {
+	pair := strings.SplitN(d, "=", 2)
+	key := strings.ToLower(pair[0])
+	values := strings.Split(pair[1], ",")
+	values = trimCollection(values)
+
+	axis := Axis{
+		Name:   key,
+		Values: values,
+	}
+
+	return axis
 }
 
 func validateConfig(config *Config) {
