@@ -1,7 +1,7 @@
 package plan
 
 import (
-	"log"
+	"errors"
 	"os"
 	"strconv"
 	"strings"
@@ -11,7 +11,7 @@ import (
 const defaultCallTimeout = 5
 
 // ReadConfigFromEnviron creates a Config by looking for CROSSDOCK_ environment vars
-func ReadConfigFromEnviron() *Config {
+func ReadConfigFromEnviron() (*Config, error) {
 	const (
 		callTimeoutKey    = "CROSSDOCK_CALL_TIMEOUT"
 		waitKey           = "CROSSDOCK_WAIT_FOR"
@@ -42,8 +42,10 @@ func ReadConfigFromEnviron() *Config {
 		Behaviors:    behaviors,
 	}
 
-	validateConfig(config)
-	return config
+	if err := validateConfig(config); err != nil {
+		return nil, err
+	}
+	return config, nil
 }
 
 func parseBehavior(d string) Behavior {
@@ -74,17 +76,18 @@ func parseAxis(d string) Axis {
 	return axis
 }
 
-func validateConfig(config *Config) {
+func validateConfig(config *Config) error {
 	for _, behavior := range config.Behaviors {
 		if _, ok := config.Axes[behavior.Clients]; !ok {
-			log.Fatal("Can't find AXIS environment for: " + behavior.Clients)
+			return errors.New("Can't find AXIS environment for: " + behavior.Clients)
 		}
 		for _, param := range behavior.Params {
 			if _, ok := config.Axes[param]; !ok {
-				log.Fatal("Can't find AXIS environment for: " + param)
+				return errors.New("Can't find AXIS environment for: " + param)
 			}
 		}
 	}
+	return nil
 }
 
 func trimCollection(in []string) []string {

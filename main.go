@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"time"
 
@@ -12,7 +13,12 @@ import (
 
 func main() {
 	fmt.Printf("\nCrossdock starting...\n\n")
-	plan := plan.New(plan.ReadConfigFromEnviron())
+
+	config, err := plan.ReadConfigFromEnviron()
+	if err != nil {
+		log.Fatal(err)
+	}
+	plan := plan.New(config)
 
 	fmt.Printf("Waiting on CROSSDOCK_WAIT_FOR=%v\n\n", plan.Config.WaitForHosts)
 	execute.Wait(plan.Config.WaitForHosts, time.Duration(30)*time.Second)

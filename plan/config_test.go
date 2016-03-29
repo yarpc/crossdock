@@ -14,7 +14,8 @@ func TestReadConfigFromEnviron(t *testing.T) {
 	os.Setenv("CROSSDOCK_BEHAVIOR_ECHO", "client,server,transport")
 	defer os.Clearenv()
 
-	config := ReadConfigFromEnviron()
+	config, err := ReadConfigFromEnviron()
+	assert.NoError(t, err, "cross dock configuration is incorrect.")
 
 	client := Axis{Name: "client", Values: []string{"yarpc-go", "yarpc-node", "yarpc-browser"}}
 	server := Axis{Name: "server", Values: []string{"yarpc-go", "yarpc-node"}}
@@ -38,7 +39,8 @@ func TestReadConfigFromEnvironTrimsWhitespace(t *testing.T) {
 	os.Setenv("CROSSDOCK_WAIT_FOR", " alpha, omega ")
 	defer os.Clearenv()
 
-	config := ReadConfigFromEnviron()
+	config, err := ReadConfigFromEnviron()
+	assert.NoError(t, err, "crossdock configuration is incorrect")
 
 	assert.Equal(t, config.WaitForHosts, []string{"alpha", "omega"})
 }
