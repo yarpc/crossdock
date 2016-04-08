@@ -4,8 +4,14 @@ crossdock:
         - alpha
         - omega
     environment:
-        - CROSSDOCK_CLIENTS=alpha,omega
-        - CROSSDOCK_AXIS_BEHAVIOR=dance,sing
+      - CROSSDOCK_WAIT_FOR=alpha,omega
+
+      - CROSSDOCK_AXIS_CLIENT=alpha,omega
+      - CROSSDOCK_AXIS_SERVER=alpha,omega
+      - CROSSDOCK_AXIS_TRANSPORT=http,tchannel
+
+      - CROSSDOCK_BEHAVIOR_DANCE=client,server,transport
+      - CROSSDOCK_BEHAVIOR_SLING=client,server,transport
 
 alpha:
     image: breerly/hello-server
