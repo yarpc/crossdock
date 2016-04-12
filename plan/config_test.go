@@ -28,10 +28,10 @@ import (
 )
 
 func TestReadConfigFromEnviron(t *testing.T) {
-	os.Setenv("CROSSDOCK_AXIS_CLIENT", "yarpc-go,yarpc-node,yarpc-browser")
-	os.Setenv("CROSSDOCK_AXIS_SERVER", "yarpc-go,yarpc-node")
-	os.Setenv("CROSSDOCK_AXIS_TRANSPORT", "http,tchannel")
-	os.Setenv("CROSSDOCK_BEHAVIOR_ECHO", "client,server,transport")
+	os.Setenv("AXIS_CLIENT", "yarpc-go,yarpc-node,yarpc-browser")
+	os.Setenv("AXIS_SERVER", "yarpc-go,yarpc-node")
+	os.Setenv("AXIS_TRANSPORT", "http,tchannel")
+	os.Setenv("BEHAVIOR_ECHO", "client,server,transport")
 	defer os.Clearenv()
 
 	config, err := ReadConfigFromEnviron()
@@ -56,7 +56,7 @@ func TestReadConfigFromEnviron(t *testing.T) {
 }
 
 func TestReadConfigFromEnvironTrimsWhitespace(t *testing.T) {
-	os.Setenv("CROSSDOCK_WAIT_FOR", " alpha, omega ")
+	os.Setenv("WAIT_FOR", " alpha, omega ")
 	defer os.Clearenv()
 
 	config, err := ReadConfigFromEnviron()

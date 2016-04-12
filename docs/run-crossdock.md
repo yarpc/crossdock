@@ -10,8 +10,8 @@ crossdock:
     links:
         - client
     environment:
-        - CROSSDOCK_CLIENTS=client
-        - CROSSDOCK_AXIS_BEHAVIOR=dance,run
+        - CLIENTS=client
+        - AXIS_BEHAVIOR=dance,run
 
 client:
     build: .

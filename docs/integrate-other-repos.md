@@ -13,8 +13,8 @@ crossdock:
         - client
         - newclient
     environment:
-        - CROSSDOCK_CLIENTS=client,newclient
-        - CROSSDOCK_AXIS_BEHAVIOR=dance,run
+        - CLIENTS=client,newclient
+        - AXIS_BEHAVIOR=dance,run
 
 client:
     build: .

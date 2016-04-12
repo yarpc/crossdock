@@ -38,7 +38,7 @@ func main() {
 
 		// once the client is ready, Crossdock will make an HTTP request
 		// to / with axis you defined in docker-compose.yml,
-		// in this case, we've defined CROSSDOCK_AXIS_BEHAVIOR
+		// in this case, we've defined AXIS_BEHAVIOR
 		switch behavior {
 
 		// we've recieved a request asking us to test the "dance" behavior,

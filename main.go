@@ -40,7 +40,7 @@ func main() {
 	}
 	plan := plan.New(config)
 
-	fmt.Printf("Waiting on CROSSDOCK_WAIT_FOR=%v\n\n", plan.Config.WaitForHosts)
+	fmt.Printf("Waiting on WAIT_FOR=%v\n\n", plan.Config.WaitForHosts)
 	execute.Wait(plan.Config.WaitForHosts, time.Duration(30)*time.Second)
 
 	fmt.Printf("\nExecuting Matrix...\n\n")

@@ -23,13 +23,13 @@ crossdock:
         - alpha
         - omega
     environment:
-        - CROSSDOCK_WAIT_FOR=alpha,omega
+        - WAIT_FOR=alpha,omega
 
-        - CROSSDOCK_AXIS_CLIENTS=alpha,omega
-        - CROSSDOCK_AXIS_SPEED=fast,slow
+        - AXIS_CLIENTS=alpha,omega
+        - AXIS_SPEED=fast,slow
 
-        - CROSSDOCK_BEHAVIOR_DANCE=clients,speed
-        - CROSSDOCK_BENAVIOR_RUN=clients,speed
+        - BEHAVIOR_DANCE=clients,speed
+        - BENAVIOR_RUN=clients,speed
 
 alpha:
     image: breerly/hello-server

@@ -7,8 +7,8 @@ Let's update our `docker-compose.yml` file to include an additional Dimension:
 
 ```
 # ...
-- CROSSDOCK_AXIS_BEHAVIOR=dance,run
-- CROSSDOCK_AXIS_SPEED=fast,slow
+- AXIS_BEHAVIOR=dance,run
+- AXIS_SPEED=fast,slow
 ```
 
 Now run Crossdock:

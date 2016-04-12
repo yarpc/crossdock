@@ -4,9 +4,9 @@ crossdock:
         - client
         - newclient
     environment:
-        - CROSSDOCK_CLIENTS=client,newclient
-        - CROSSDOCK_AXIS_BEHAVIOR=dance,run
-        - CROSSDOCK_AXIS_SPEED=fast,slow
+        - CLIENTS=client,newclient
+        - AXIS_BEHAVIOR=dance,run
+        - AXIS_SPEED=fast,slow
 
 client:
     build: .
