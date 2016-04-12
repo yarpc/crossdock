@@ -25,7 +25,13 @@ import (
 	"fmt"
 
 	"github.com/yarpc/crossdock/execute"
+
+	"github.com/fatih/color"
 )
+
+var green = color.New(color.FgGreen).SprintFunc()
+var yellow = color.New(color.FgYellow).SprintFunc()
+var red = color.New(color.FgRed).SprintFunc()
 
 // Stream results to the console, error at end if any fail
 func Stream(tests <-chan execute.TestResponse) error {
@@ -35,11 +41,11 @@ func Stream(tests <-chan execute.TestResponse) error {
 			var statStr string
 			switch result.Status {
 			case execute.Success:
-				statStr = "PASSED"
+				statStr = green("✓")
 			case execute.Skipped:
-				statStr = "SKIPPED"
+				statStr = yellow("S")
 			default:
-				statStr = "FAILED"
+				statStr = red("F")
 				failed = true
 			}
 			fmt.Printf("%v - %v - %v\n", statStr, test.TestCase, result.Output)

@@ -1,28 +1,16 @@
-hash: a9ed92449114cbbd11060d51558da53106f9168adb7aa560f0d599259205db0f
-updated: 2016-03-29T14:50:13.894112344-07:00
+hash: e71d26850e3330d56ee3e2d9938eace145c780305e761b47abc640608d2214ff
+updated: 2016-04-12T12:35:09.86721773-07:00
 imports:
-- name: github.com/davecgh/go-spew
-  version: 2df174808ee097f90d259e432cc04442cf60be21
-  subpackages:
-  - spew
-- name: github.com/mattn/go-runewidth
-  version: e882a96ec18dd43fa283187b66af74497c9101c0
+- name: github.com/fatih/color
+  version: 533cd7fd8a85905f67a1753afb4deddc85ea174f
 - name: github.com/olekukonko/tablewriter
   version: cca8bbc0798408af109aaaa239cbd2634846b340
 - name: github.com/orchestrate-io/dvr
   version: adafdc8de746d2a490c15a8ab8704c6110a0dcd6
-- name: github.com/pmezard/go-difflib
-  version: d8ed2627bdf02c080bf22230dbb337003b7aba2d
-  subpackages:
-  - difflib
-- name: github.com/stretchr/objx
-  version: cbeaeb16a013161a98496fad62933b1d21786672
 - name: github.com/stretchr/testify
   version: 9f9027faeb0dad515336ed2f28317f9f8f527ab4
   subpackages:
   - assert
-  - http
-  - mock
 - name: golang.org/x/net
   version: 35b06af0720201bc2f326773a80767387544f8c4
   subpackages:
