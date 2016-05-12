@@ -46,10 +46,10 @@ func main() {
 	fmt.Printf("\nExecuting Matrix...\n\n")
 	results := execute.Run(plan)
 
-	summary, err := output.Stream(results)
+	summary := output.Stream(results)
 	output.Summarize(summary)
 
-	if err != nil {
+	if summary.Failed == true {
 		os.Exit(1)
 	}
 }

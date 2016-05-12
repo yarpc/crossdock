@@ -21,7 +21,6 @@
 package output
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/yarpc/crossdock/execute"
@@ -43,8 +42,7 @@ type Summary struct {
 }
 
 // Stream results to the console, error at end if any fail
-func Stream(tests <-chan execute.TestResponse) (summary Summary, err error) {
-	failed := false
+func Stream(tests <-chan execute.TestResponse) (summary Summary) {
 	for test := range tests {
 		for _, result := range test.Results {
 			var statStr string
@@ -57,17 +55,13 @@ func Stream(tests <-chan execute.TestResponse) (summary Summary, err error) {
 				summary.SkippedAmount++
 			default:
 				statStr = red("F")
-				failed = true
+				summary.Failed = true
 				summary.FailAmount++
 			}
 			fmt.Printf("%v - %v - %v\n", statStr, test.TestCase, result.Output)
 		}
 	}
-	if failed == true {
-		summary.Failed = true
-		return summary, errors.New("one or more tests failed")
-	}
-	return summary, nil
+	return summary
 }
 
 // Summarize outputs the summary to the console
