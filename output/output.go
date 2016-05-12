@@ -42,7 +42,8 @@ type Summary struct {
 }
 
 // Stream results to the console, error at end if any fail
-func Stream(tests <-chan execute.TestResponse) (summary Summary) {
+func Stream(tests <-chan execute.TestResponse) Summary {
+	var summary Summary
 	for test := range tests {
 		for _, result := range test.Results {
 			var statStr string
