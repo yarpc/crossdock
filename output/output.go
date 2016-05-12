@@ -69,7 +69,7 @@ func Stream(tests <-chan execute.TestResponse) Summary {
 func Summarize(summary Summary) {
 	fmt.Println("")
 	if summary.SuccessAmount > 0 {
-		fmt.Printf("%v successed\n", summary.SuccessAmount)
+		fmt.Printf("%v succeeded\n", summary.SuccessAmount)
 	}
 	if summary.FailAmount > 0 {
 		fmt.Printf("%v failed\n", summary.FailAmount)
