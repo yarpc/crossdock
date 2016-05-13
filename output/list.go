@@ -33,7 +33,7 @@ var yellow = color.New(color.FgYellow).SprintFunc()
 var red = color.New(color.FgRed).SprintFunc()
 
 // List is a ReporterFunc that produces a verbose list of results
-func List(tests <-chan execute.TestResponse) Summary {
+var List ReporterFunc = func(tests <-chan execute.TestResponse) Summary {
 	var summary Summary
 	for test := range tests {
 		for _, result := range test.Results {

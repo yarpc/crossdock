@@ -43,12 +43,12 @@ func (f ReporterFunc) Stream(tests <-chan execute.TestResponse) Summary {
 func GetReporter(name string) (Reporter, error) {
 	// default reporter
 	if name == "" {
-		return ReporterFunc(List), nil
+		return List, nil
 	}
 	// else a specific value was provided
 	switch name {
 	case "list":
-		return ReporterFunc(List), nil
+		return List, nil
 	default:
 		return nil, fmt.Errorf("%v is not a valid reporter", name)
 	}
