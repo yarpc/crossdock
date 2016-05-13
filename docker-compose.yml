@@ -5,7 +5,6 @@ crossdock:
         - omega
     environment:
       - WAIT_FOR=alpha,omega
-      - REPORT=list
 
       - AXIS_CLIENT=alpha,omega
       - AXIS_SERVER=alpha,omega

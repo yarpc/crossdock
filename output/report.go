@@ -20,7 +20,11 @@
 
 package output
 
-import "github.com/yarpc/crossdock/execute"
+import (
+	"fmt"
+
+	"github.com/yarpc/crossdock/execute"
+)
 
 // Reporter is responsible for outputting test results
 type Reporter interface {
@@ -36,6 +40,16 @@ func (f ReporterFunc) Stream(tests <-chan execute.TestResponse) Summary {
 }
 
 // GetReporter returns a ReporterFunc for the given name
-func GetReporter(name string) Reporter {
-	return ReporterFunc(List)
+func GetReporter(name string) (Reporter, error) {
+	// default reporter
+	if name == "" {
+		return ReporterFunc(List), nil
+	}
+	// else a specific value was provided
+	switch name {
+	case "list":
+		return ReporterFunc(List), nil
+	default:
+		return nil, fmt.Errorf("%v is not a valid reporter", name)
+	}
 }
