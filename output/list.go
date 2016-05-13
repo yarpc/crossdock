@@ -18,39 +18,40 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package main
+package output
 
 import (
 	"fmt"
-	"log"
-	"os"
-	"time"
 
 	"github.com/yarpc/crossdock/execute"
-	"github.com/yarpc/crossdock/output"
-	"github.com/yarpc/crossdock/plan"
+
+	"github.com/fatih/color"
 )
 
-func main() {
-	fmt.Printf("\nCrossdock starting...\n\n")
+var green = color.New(color.FgGreen).SprintFunc()
+var yellow = color.New(color.FgYellow).SprintFunc()
+var red = color.New(color.FgRed).SprintFunc()
 
-	config, err := plan.ReadConfigFromEnviron()
-	if err != nil {
-		log.Fatal(err)
+// List is a ReporterFunc that produces a verbose list of results
+func List(tests <-chan execute.TestResponse) Summary {
+	var summary Summary
+	for test := range tests {
+		for _, result := range test.Results {
+			var statStr string
+			switch result.Status {
+			case execute.Success:
+				statStr = green("✓")
+				summary.SuccessAmount++
+			case execute.Skipped:
+				statStr = yellow("S")
+				summary.SkippedAmount++
+			default:
+				statStr = red("F")
+				summary.Failed = true
+				summary.FailAmount++
+			}
+			fmt.Printf("%v - %v - %v\n", statStr, test.TestCase, result.Output)
+		}
 	}
-	plan := plan.New(config)
-
-	fmt.Printf("Waiting on WAIT_FOR=%v\n\n", plan.Config.WaitForHosts)
-	execute.Wait(plan.Config.WaitForHosts, time.Duration(30)*time.Second)
-
-	fmt.Printf("\nExecuting Matrix...\n\n")
-	results := execute.Run(plan)
-
-	reporter := output.GetReporter("list")
-	summary := reporter.Stream(results)
-	output.Summarize(summary)
-
-	if summary.Failed == true {
-		os.Exit(1)
-	}
+	return summary
 }

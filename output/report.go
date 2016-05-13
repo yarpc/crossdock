@@ -18,39 +18,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package main
+package output
 
-import (
-	"fmt"
-	"log"
-	"os"
-	"time"
+import "github.com/yarpc/crossdock/execute"
 
-	"github.com/yarpc/crossdock/execute"
-	"github.com/yarpc/crossdock/output"
-	"github.com/yarpc/crossdock/plan"
-)
+// Reporter is responsible for outputting test results
+type Reporter interface {
+	Stream(tests <-chan execute.TestResponse) Summary
+}
 
-func main() {
-	fmt.Printf("\nCrossdock starting...\n\n")
+// ReporterFunc streams test results to the console
+type ReporterFunc func(tests <-chan execute.TestResponse) Summary
 
-	config, err := plan.ReadConfigFromEnviron()
-	if err != nil {
-		log.Fatal(err)
-	}
-	plan := plan.New(config)
+// Stream outputs test results to the console
+func (f ReporterFunc) Stream(tests <-chan execute.TestResponse) Summary {
+	return f(tests)
+}
 
-	fmt.Printf("Waiting on WAIT_FOR=%v\n\n", plan.Config.WaitForHosts)
-	execute.Wait(plan.Config.WaitForHosts, time.Duration(30)*time.Second)
-
-	fmt.Printf("\nExecuting Matrix...\n\n")
-	results := execute.Run(plan)
-
-	reporter := output.GetReporter("list")
-	summary := reporter.Stream(results)
-	output.Summarize(summary)
-
-	if summary.Failed == true {
-		os.Exit(1)
-	}
+// GetReporter returns a ReporterFunc for the given name
+func GetReporter(name string) Reporter {
+	return ReporterFunc(List)
 }

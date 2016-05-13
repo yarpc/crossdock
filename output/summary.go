@@ -20,17 +20,7 @@
 
 package output
 
-import (
-	"fmt"
-
-	"github.com/yarpc/crossdock/execute"
-
-	"github.com/fatih/color"
-)
-
-var green = color.New(color.FgGreen).SprintFunc()
-var yellow = color.New(color.FgYellow).SprintFunc()
-var red = color.New(color.FgRed).SprintFunc()
+import "fmt"
 
 // Summary contains an account of the test run
 type Summary struct {
@@ -39,30 +29,6 @@ type Summary struct {
 	SuccessAmount int
 	FailAmount    int
 	SkippedAmount int
-}
-
-// Stream results to the console, error at end if any fail
-func Stream(tests <-chan execute.TestResponse) Summary {
-	var summary Summary
-	for test := range tests {
-		for _, result := range test.Results {
-			var statStr string
-			switch result.Status {
-			case execute.Success:
-				statStr = green("✓")
-				summary.SuccessAmount++
-			case execute.Skipped:
-				statStr = yellow("S")
-				summary.SkippedAmount++
-			default:
-				statStr = red("F")
-				summary.Failed = true
-				summary.FailAmount++
-			}
-			fmt.Printf("%v - %v - %v\n", statStr, test.TestCase, result.Output)
-		}
-	}
-	return summary
 }
 
 // Summarize outputs the summary to the console
