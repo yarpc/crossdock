@@ -28,6 +28,7 @@ import (
 )
 
 func TestReadConfigFromEnviron(t *testing.T) {
+	os.Setenv("REPORT", "list")
 	os.Setenv("AXIS_CLIENT", "yarpc-go,yarpc-node,yarpc-browser")
 	os.Setenv("AXIS_SERVER", "yarpc-go,yarpc-node")
 	os.Setenv("AXIS_TRANSPORT", "http,tchannel")
@@ -40,6 +41,8 @@ func TestReadConfigFromEnviron(t *testing.T) {
 	client := Axis{Name: "client", Values: []string{"yarpc-go", "yarpc-node", "yarpc-browser"}}
 	server := Axis{Name: "server", Values: []string{"yarpc-go", "yarpc-node"}}
 	transport := Axis{Name: "transport", Values: []string{"http", "tchannel"}}
+
+	assert.Equal(t, config.Report, "list")
 
 	assert.Equal(t, config.Axes, map[string]Axis{
 		"client":    client,
