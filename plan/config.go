@@ -43,7 +43,7 @@ func ReadConfigFromEnviron() (*Config, error) {
 		callTimeout = defaultCallTimeout
 	}
 
-	WaitForHosts := trimCollection(strings.Split(os.Getenv(waitKey), ","))
+	waitForHosts := trimCollection(strings.Split(os.Getenv(waitKey), ","))
 	axes := make(map[string]Axis)
 	behaviors := make(map[string]Behavior)
 	for _, e := range os.Environ() {
@@ -57,7 +57,7 @@ func ReadConfigFromEnviron() (*Config, error) {
 	}
 	config := &Config{
 		CallTimeout:  time.Duration(callTimeout),
-		WaitForHosts: WaitForHosts,
+		WaitForHosts: waitForHosts,
 		Axes:         axes,
 		Behaviors:    behaviors,
 	}

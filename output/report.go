@@ -30,7 +30,7 @@ type Reporter interface {
 // ReporterFunc streams test results to the console
 type ReporterFunc func(tests <-chan execute.TestResponse) Summary
 
-// Stream outputs test results to the console
+// Stream allows ReporterFunc to fulfill the Reporter interface
 func (f ReporterFunc) Stream(tests <-chan execute.TestResponse) Summary {
 	return f(tests)
 }

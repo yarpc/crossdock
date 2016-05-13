@@ -46,7 +46,7 @@ func main() {
 	fmt.Printf("\nExecuting Matrix...\n\n")
 	results := execute.Run(plan)
 
-	reporter := output.GetReporter("list")
+	reporter := output.GetReporter(config.Report)
 	summary := reporter.Stream(results)
 	output.Summarize(summary)
 
