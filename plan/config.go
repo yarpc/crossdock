@@ -58,7 +58,7 @@ func ReadConfigFromEnviron() (*Config, error) {
 		}
 	}
 	config := &Config{
-		Report:       os.Getenv(reportKey),
+		Report:       strings.ToLower(os.Getenv(reportKey)),
 		CallTimeout:  time.Duration(callTimeout),
 		WaitForHosts: waitForHosts,
 		Axes:         axes,
