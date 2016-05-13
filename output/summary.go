@@ -26,22 +26,22 @@ import "fmt"
 type Summary struct {
 	Failed bool
 
-	SuccessAmount int
-	FailAmount    int
-	SkippedAmount int
+	NumSuccess int
+	NumFail    int
+	NumSkipped int
 }
 
 // Summarize outputs the summary to the console
 func Summarize(summary Summary) {
 	fmt.Println("")
-	if summary.SuccessAmount > 0 {
-		fmt.Printf("%v passed\n", summary.SuccessAmount)
+	if summary.NumSuccess > 0 {
+		fmt.Printf("%v passed\n", summary.NumSuccess)
 	}
-	if summary.FailAmount > 0 {
-		fmt.Printf("%v failed\n", summary.FailAmount)
+	if summary.NumFail > 0 {
+		fmt.Printf("%v failed\n", summary.NumFail)
 	}
-	if summary.SkippedAmount > 0 {
-		fmt.Printf("%v skipped\n", summary.SkippedAmount)
+	if summary.NumSkipped > 0 {
+		fmt.Printf("%v skipped\n", summary.NumSkipped)
 	}
 
 	if summary.Failed == true {

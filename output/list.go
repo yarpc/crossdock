@@ -41,14 +41,14 @@ func List(tests <-chan execute.TestResponse) Summary {
 			switch result.Status {
 			case execute.Success:
 				statStr = green("✓")
-				summary.SuccessAmount++
+				summary.NumSuccess++
 			case execute.Skipped:
 				statStr = yellow("S")
-				summary.SkippedAmount++
+				summary.NumSkipped++
 			default:
 				statStr = red("F")
 				summary.Failed = true
-				summary.FailAmount++
+				summary.NumFail++
 			}
 			fmt.Printf("%v - %v - %v\n", statStr, test.TestCase, result.Output)
 		}
