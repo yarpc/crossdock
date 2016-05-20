@@ -24,19 +24,20 @@ import (
 	"fmt"
 
 	"github.com/yarpc/crossdock/execute"
+	"github.com/yarpc/crossdock/plan"
 )
 
 // Reporter is responsible for outputting test results
 type Reporter interface {
-	Stream(tests <-chan execute.TestResponse) Summary
+	Stream(config *plan.Config, tests <-chan execute.TestResponse) Summary
 }
 
 // ReporterFunc streams test results to the console
-type ReporterFunc func(tests <-chan execute.TestResponse) Summary
+type ReporterFunc func(config *plan.Config, tests <-chan execute.TestResponse) Summary
 
 // Stream allows ReporterFunc to fulfill the Reporter interface
-func (f ReporterFunc) Stream(tests <-chan execute.TestResponse) Summary {
-	return f(tests)
+func (f ReporterFunc) Stream(config *plan.Config, tests <-chan execute.TestResponse) Summary {
+	return f(config, tests)
 }
 
 // GetReporter returns a ReporterFunc for the given name
@@ -49,6 +50,8 @@ func GetReporter(name string) (Reporter, error) {
 	switch name {
 	case "list":
 		return List, nil
+	case "json":
+		return Json, nil
 	default:
 		return nil, fmt.Errorf("%v is not a valid reporter", name)
 	}

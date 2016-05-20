@@ -13,6 +13,10 @@ crossdock:
       - BEHAVIOR_DANCE=client,server,transport
       - BEHAVIOR_SING=client,server,transport
 
+      - REPORT=json
+    volumes:
+      - .crossdock:/crossdock
+
 alpha:
     image: breerly/hello-server
     ports:

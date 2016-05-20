@@ -51,7 +51,7 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	summary := reporter.Stream(results)
+	summary := reporter.Stream(config, results)
 	output.Summarize(summary)
 
 	if summary.Failed == true {
