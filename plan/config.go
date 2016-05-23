@@ -61,9 +61,6 @@ func ReadConfigFromEnviron() (*Config, error) {
 	}
 
 	jsonReportPath := os.Getenv(jsonReportPathKey)
-	if jsonReportPath == "" {
-		jsonReportPath = "/crossdock/report.json"
-	}
 
 	config := &Config{
 		Report:         strings.ToLower(os.Getenv(reportKey)),
