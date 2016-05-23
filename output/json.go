@@ -13,31 +13,32 @@ var StatusNames = map[execute.Status]string{
 	execute.Skipped: "skipped",
 }
 
-type JsonTestReport struct {
+type JSONTestReport struct {
 	Client    string         `json:"client"`
 	Arguments plan.Arguments `json:"arguments"`
 	Status    string         `json:"status"`
 	Output    string         `json:"output"`
 }
 
-type JsonBehaviorReport struct {
+type JSONBehaviorReport struct {
 	Params []string         `json:"params"`
-	Tests  []JsonTestReport `json:"tests"`
+	Tests  []JSONTestReport `json:"tests"`
 }
 
-type JsonReport struct {
-	Behaviors map[string]*JsonBehaviorReport `json:"behaviors"`
+type JSONReport struct {
+	Behaviors map[string]*JSONBehaviorReport `json:"behaviors"`
 }
 
-var Json ReporterFunc = func(config *plan.Config, tests <-chan execute.TestResponse) (summary Summary) {
-
-	report := JsonReport{}
-	report.Behaviors = make(map[string]*JsonBehaviorReport)
+var JSON ReporterFunc = func(config *plan.Config, tests <-chan execute.TestResponse) Summary {
+	summary := Summary{}
+	report := JSONReport{}
+	report.Behaviors = make(map[string]*JSONBehaviorReport)
 
 	for _, behavior := range config.Behaviors {
-		behaviorReport := new(JsonBehaviorReport)
-		behaviorReport.Tests = make([]JsonTestReport, 0, 10)
-		behaviorReport.Params = behavior.Params
+		behaviorReport := &JSONBehaviorReport{
+			Tests:  make([]JSONTestReport, 0, 10),
+			Params: behavior.Params,
+		}
 		report.Behaviors[behavior.Name] = behaviorReport
 	}
 
@@ -51,7 +52,7 @@ var Json ReporterFunc = func(config *plan.Config, tests <-chan execute.TestRespo
 			continue
 		}
 		for _, result := range test.Results {
-			behaviorReport.Tests = append(behaviorReport.Tests, JsonTestReport{
+			behaviorReport.Tests = append(behaviorReport.Tests, JSONTestReport{
 				Client:    client,
 				Arguments: args,
 				Status:    StatusNames[result.Status],
@@ -65,10 +66,10 @@ var Json ReporterFunc = func(config *plan.Config, tests <-chan execute.TestRespo
 		panic(err)
 	}
 
-	err = ioutil.WriteFile("/crossdock/crossdock.json", data, 0644)
+	err = ioutil.WriteFile(config.JSONReportPath, data, 0644)
 	if err != nil {
 		panic(err)
 	}
 
-	return
+	return summary
 }

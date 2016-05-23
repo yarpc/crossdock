@@ -51,7 +51,7 @@ func GetReporter(name string) (Reporter, error) {
 	case "list":
 		return List, nil
 	case "json":
-		return Json, nil
+		return JSON, nil
 	default:
 		return nil, fmt.Errorf("%v is not a valid reporter", name)
 	}

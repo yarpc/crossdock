@@ -38,6 +38,7 @@ func ReadConfigFromEnviron() (*Config, error) {
 		waitKey           = "WAIT_FOR"
 		axisKeyPrefix     = "AXIS_"
 		behaviorKeyPrefix = "BEHAVIOR_"
+		jsonReportPathKey = "JSON_REPORT_PATH"
 	)
 
 	callTimeout, _ := strconv.Atoi(os.Getenv(callTimeoutKey))
@@ -46,6 +47,7 @@ func ReadConfigFromEnviron() (*Config, error) {
 	}
 
 	waitForHosts := trimCollection(strings.Split(os.Getenv(waitKey), ","))
+
 	axes := make(map[string]Axis)
 	behaviors := make(map[string]Behavior)
 	for _, e := range os.Environ() {
@@ -57,12 +59,19 @@ func ReadConfigFromEnviron() (*Config, error) {
 			behaviors[behavior.Name] = behavior
 		}
 	}
+
+	jsonReportPath := os.Getenv(jsonReportPathKey)
+	if jsonReportPath == "" {
+		jsonReportPath = "/crossdock/report.json"
+	}
+
 	config := &Config{
-		Report:       strings.ToLower(os.Getenv(reportKey)),
-		CallTimeout:  time.Duration(callTimeout),
-		WaitForHosts: waitForHosts,
-		Axes:         axes,
-		Behaviors:    behaviors,
+		Report:         strings.ToLower(os.Getenv(reportKey)),
+		CallTimeout:    time.Duration(callTimeout),
+		WaitForHosts:   waitForHosts,
+		Axes:           axes,
+		Behaviors:      behaviors,
+		JSONReportPath: jsonReportPath,
 	}
 
 	if err := validateConfig(config); err != nil {

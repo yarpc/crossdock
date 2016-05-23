@@ -27,11 +27,12 @@ import (
 
 // Config describes the unstructured test plan
 type Config struct {
-	Report       string
-	CallTimeout  time.Duration
-	WaitForHosts []string
-	Axes         map[string]Axis
-	Behaviors    map[string]Behavior
+	Report         string
+	CallTimeout    time.Duration
+	WaitForHosts   []string
+	Axes           map[string]Axis
+	Behaviors      map[string]Behavior
+	JSONReportPath string
 }
 
 // Axis represents combinational args to be passed to the test clients
