@@ -46,21 +46,23 @@ func main() {
 	fmt.Printf("\nExecuting Matrix...\n\n")
 	results := execute.Run(plan)
 
-	reporter, err := output.GetReporter(config.Reports)
-	if err != nil {
+	fail := func(err error) {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
+	reporter, err := output.GetReporter(config.Reports)
+	if err != nil {
+		fail(err)
+	}
+
 	if err = reporter.Start(config); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		fail(err)
 	}
 	for test := range results {
 		reporter.Next(test)
 	}
 	if err := reporter.End(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		fail(err)
 	}
 }

@@ -5,12 +5,10 @@ import (
 	"github.com/yarpc/crossdock/plan"
 )
 
-type Mux struct {
-	Reporters []Reporter
-}
+type Mux []Reporter
 
 func (r Mux) Start(config *plan.Config) error {
-	for _, reporter := range r.Reporters {
+	for _, reporter := range r {
 		if err := reporter.Start(config); err != nil {
 			return err
 		}
@@ -19,13 +17,13 @@ func (r Mux) Start(config *plan.Config) error {
 }
 
 func (r Mux) Next(response execute.TestResponse) {
-	for _, reporter := range r.Reporters {
+	for _, reporter := range r {
 		reporter.Next(response)
 	}
 }
 
 func (r Mux) End() error {
-	for _, reporter := range r.Reporters {
+	for _, reporter := range r {
 		if err := reporter.End(); err != nil {
 			return err
 		}

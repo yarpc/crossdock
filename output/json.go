@@ -26,16 +26,16 @@ type JSONReport struct {
 }
 
 type JSON struct {
-	r    JSONReport
-	path string
+	report JSONReport
+	path   string
 }
 
 func (j *JSON) Start(config *plan.Config) error {
 	j.path = config.JSONReportPath
-	j.r.Behaviors = make(map[string]*JSONBehaviorReport)
+	j.report.Behaviors = make(map[string]*JSONBehaviorReport)
 
 	if config.JSONReportPath == "" {
-		return fmt.Errorf("JSON_REPORT_PATH is a required environment varialbe for REPORT=json")
+		return fmt.Errorf("JSON_REPORT_PATH is a required environment variable for REPORT=json")
 	}
 
 	for _, behavior := range config.Behaviors {
@@ -43,7 +43,7 @@ func (j *JSON) Start(config *plan.Config) error {
 			Tests:  make([]JSONTestReport, 0, 10),
 			Params: behavior.Params,
 		}
-		j.r.Behaviors[behavior.Name] = behaviorReport
+		j.report.Behaviors[behavior.Name] = behaviorReport
 	}
 
 	return nil
@@ -54,7 +54,7 @@ func (j *JSON) Next(test execute.TestResponse) {
 	args := test.TestCase.Arguments
 	behavior := test.TestCase.Arguments["behavior"]
 	delete(args, "behavior")
-	behaviorReport := j.r.Behaviors[behavior]
+	behaviorReport := j.report.Behaviors[behavior]
 	if behaviorReport == nil {
 		return
 	}
@@ -69,7 +69,7 @@ func (j *JSON) Next(test execute.TestResponse) {
 }
 
 func (j *JSON) End() error {
-	data, err := json.Marshal(j.r)
+	data, err := json.Marshal(j.report)
 	if err != nil {
 		return err
 	}

@@ -33,14 +33,15 @@ var green = color.New(color.FgGreen).SprintFunc()
 var yellow = color.New(color.FgYellow).SprintFunc()
 var red = color.New(color.FgRed).SprintFunc()
 
-type List struct {
-}
+type list struct{}
 
-func (l *List) Start(config *plan.Config) error {
+var List list
+
+func (list) Start(config *plan.Config) error {
 	return nil
 }
 
-func (l *List) Next(test execute.TestResponse) {
+func (list) Next(test execute.TestResponse) {
 	for _, result := range test.Results {
 		var statStr string
 		switch result.Status {
@@ -55,6 +56,6 @@ func (l *List) Next(test execute.TestResponse) {
 	}
 }
 
-func (l *List) End() error {
+func (list) End() error {
 	return nil
 }

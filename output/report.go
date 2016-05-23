@@ -40,18 +40,18 @@ func GetReporter(names []string) (Reporter, error) {
 	if len(names) == 0 {
 		names = append(names, "list")
 	}
-	reporters := []Reporter{}
+	var mux Mux
 	for _, name := range names {
 		switch name {
 		case "list":
-			reporters = append(reporters, &List{})
+			mux = append(mux, List)
 		case "json":
-			reporters = append(reporters, &JSON{})
+			mux = append(mux, &JSON{})
 		default:
 			return nil, fmt.Errorf("%v is not a valid reporter", name)
 		}
 	}
 	summary := &Summary{}
-	reporters = append(reporters, summary)
-	return &Mux{Reporters: reporters}, nil
+	mux = append(mux, summary)
+	return mux, nil
 }
