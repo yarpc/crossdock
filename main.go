@@ -51,7 +51,20 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	summary := reporter.Stream(config, results)
+
+	err = reporter.Start(config)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	for test := range results {
+		reporter.Next(test, config)
+	}
+	summary, err := reporter.End(config)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 	output.Summarize(summary)
 
 	if summary.Failed == true {
