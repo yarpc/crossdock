@@ -2,9 +2,10 @@ package output
 
 import (
 	"encoding/json"
+	"io/ioutil"
+
 	"github.com/yarpc/crossdock/execute"
 	"github.com/yarpc/crossdock/plan"
-	"io/ioutil"
 )
 
 type JSONTestReport struct {
