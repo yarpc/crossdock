@@ -42,7 +42,7 @@ func TestReadConfigFromEnviron(t *testing.T) {
 	server := Axis{Name: "server", Values: []string{"yarpc-go", "yarpc-node"}}
 	transport := Axis{Name: "transport", Values: []string{"http", "tchannel"}}
 
-	assert.Equal(t, config.Report, "list")
+	assert.Equal(t, config.Reports, []string{"list"})
 
 	assert.Equal(t, config.Axes, map[string]Axis{
 		"client":    client,

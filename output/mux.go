@@ -6,33 +6,29 @@ import (
 )
 
 type Mux struct {
-	s         Summary
 	Reporters []Reporter
 }
 
 func (r Mux) Start(config *plan.Config) error {
 	for _, reporter := range r.Reporters {
-		err := reporter.Start(config)
-		if err != nil {
+		if err := reporter.Start(config); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func (r Mux) Next(response execute.TestResponse, config *plan.Config) {
+func (r Mux) Next(response execute.TestResponse) {
 	for _, reporter := range r.Reporters {
-		reporter.Next(response, config)
+		reporter.Next(response)
 	}
 }
 
-func (r Mux) End(config *plan.Config) (Summary, error) {
-	var summary Summary
+func (r Mux) End() error {
 	for _, reporter := range r.Reporters {
-		summary, err := reporter.End(config)
-		if err != nil {
-			return summary, err
+		if err := reporter.End(); err != nil {
+			return err
 		}
 	}
-	return summary, nil
+	return nil
 }

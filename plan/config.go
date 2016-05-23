@@ -47,6 +47,7 @@ func ReadConfigFromEnviron() (*Config, error) {
 	}
 
 	waitForHosts := trimCollection(strings.Split(os.Getenv(waitKey), ","))
+	reports := trimCollection(strings.Split(strings.ToLower(os.Getenv(reportKey)), ","))
 
 	axes := make(map[string]Axis)
 	behaviors := make(map[string]Behavior)
@@ -63,7 +64,7 @@ func ReadConfigFromEnviron() (*Config, error) {
 	jsonReportPath := os.Getenv(jsonReportPathKey)
 
 	config := &Config{
-		Report:         strings.ToLower(os.Getenv(reportKey)),
+		Reports:        reports,
 		CallTimeout:    time.Duration(callTimeout),
 		WaitForHosts:   waitForHosts,
 		Axes:           axes,
@@ -120,9 +121,12 @@ func validateConfig(config *Config) error {
 }
 
 func trimCollection(in []string) []string {
-	ret := make([]string, len(in))
-	for i, v := range in {
-		ret[i] = strings.Trim(v, " ")
+	ret := make([]string, 0, len(in))
+	for _, v := range in {
+		if v == "" {
+			continue
+		}
+		ret = append(ret, strings.Trim(v, " "))
 	}
 	return ret
 }

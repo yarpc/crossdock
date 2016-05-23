@@ -26,11 +26,12 @@ type JSONReport struct {
 }
 
 type JSON struct {
-	s Summary
-	r JSONReport
+	r    JSONReport
+	path string
 }
 
 func (j *JSON) Start(config *plan.Config) error {
+	j.path = config.JSONReportPath
 	j.r.Behaviors = make(map[string]*JSONBehaviorReport)
 
 	if config.JSONReportPath == "" {
@@ -48,7 +49,7 @@ func (j *JSON) Start(config *plan.Config) error {
 	return nil
 }
 
-func (j *JSON) Next(test execute.TestResponse, config *plan.Config) {
+func (j *JSON) Next(test execute.TestResponse) {
 	client := test.TestCase.Client
 	args := test.TestCase.Arguments
 	behavior := test.TestCase.Arguments["behavior"]
@@ -67,16 +68,15 @@ func (j *JSON) Next(test execute.TestResponse, config *plan.Config) {
 	}
 }
 
-func (j *JSON) End(config *plan.Config) (Summary, error) {
+func (j *JSON) End() error {
 	data, err := json.Marshal(j.r)
 	if err != nil {
-		return j.s, err
+		return err
 	}
 
-	err = ioutil.WriteFile(config.JSONReportPath, data, 0644)
-	if err != nil {
-		return j.s, err
+	if err = ioutil.WriteFile(j.path, data, 0644); err != nil {
+		return err
 	}
 
-	return j.s, nil
+	return nil
 }

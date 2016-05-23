@@ -20,7 +20,12 @@
 
 package output
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/yarpc/crossdock/execute"
+	"github.com/yarpc/crossdock/plan"
+)
 
 // Summary contains an account of the test run
 type Summary struct {
@@ -31,22 +36,41 @@ type Summary struct {
 	NumSkipped int
 }
 
+func (s *Summary) Start(config *plan.Config) error {
+	return nil
+}
+
+func (s *Summary) Next(test execute.TestResponse) {
+	for _, result := range test.Results {
+		switch result.Status {
+		case execute.Success:
+			s.NumSuccess++
+		case execute.Skipped:
+			s.NumSkipped++
+		default:
+			s.Failed = true
+			s.NumFail++
+		}
+	}
+}
+
 // Summarize outputs the summary to the console
-func Summarize(summary Summary) {
+func (s *Summary) End() error {
 	fmt.Println("")
-	if summary.NumSuccess > 0 {
-		fmt.Printf("%v passed\n", summary.NumSuccess)
+	if s.NumSuccess > 0 {
+		fmt.Printf("%v passed\n", s.NumSuccess)
 	}
-	if summary.NumFail > 0 {
-		fmt.Printf("%v failed\n", summary.NumFail)
+	if s.NumFail > 0 {
+		fmt.Printf("%v failed\n", s.NumFail)
 	}
-	if summary.NumSkipped > 0 {
-		fmt.Printf("%v skipped\n", summary.NumSkipped)
+	if s.NumSkipped > 0 {
+		fmt.Printf("%v skipped\n", s.NumSkipped)
 	}
 
-	if summary.Failed == true {
+	if s.Failed {
 		fmt.Printf("\nTests did not pass!\n\n")
-		return
+		return nil
 	}
 	fmt.Printf("\nTests passed!\n\n")
+	return nil
 }

@@ -30,32 +30,28 @@ import (
 // Reporter is responsible for outputting test results
 type Reporter interface {
 	Start(config *plan.Config) error
-	Next(response execute.TestResponse, config *plan.Config)
-	End(config *plan.Config) (Summary, error)
+	Next(response execute.TestResponse)
+	End() error
 }
 
 // GetReporter returns a ReporterFunc for the given name
-func GetReporter(name string) (Reporter, error) {
+func GetReporter(names []string) (Reporter, error) {
 	// default reporter
-	if name == "" {
-		return &List{}, nil
+	if len(names) == 0 {
+		names = append(names, "list")
 	}
-	// else a specific value was provided
-	switch name {
-	case "list":
-		return &List{}, nil
-	case "json":
-		return &JSON{}, nil
-	case "list,json":
-		fallthrough
-	case "json,list":
-		return &Mux{
-			Reporters: []Reporter{
-				&List{},
-				&JSON{},
-			},
-		}, nil
-	default:
-		return nil, fmt.Errorf("%v is not a valid reporter", name)
+	reporters := []Reporter{}
+	for _, name := range names {
+		switch name {
+		case "list":
+			reporters = append(reporters, &List{})
+		case "json":
+			reporters = append(reporters, &JSON{})
+		default:
+			return nil, fmt.Errorf("%v is not a valid reporter", name)
+		}
 	}
+	summary := &Summary{}
+	reporters = append(reporters, summary)
+	return &Mux{Reporters: reporters}, nil
 }

@@ -34,32 +34,27 @@ var yellow = color.New(color.FgYellow).SprintFunc()
 var red = color.New(color.FgRed).SprintFunc()
 
 type List struct {
-	Summary Summary
 }
 
 func (l *List) Start(config *plan.Config) error {
 	return nil
 }
 
-func (l *List) Next(test execute.TestResponse, config *plan.Config) {
+func (l *List) Next(test execute.TestResponse) {
 	for _, result := range test.Results {
 		var statStr string
 		switch result.Status {
 		case execute.Success:
 			statStr = green("✓")
-			l.Summary.NumSuccess++
 		case execute.Skipped:
 			statStr = yellow("S")
-			l.Summary.NumSkipped++
 		default:
 			statStr = red("F")
-			l.Summary.Failed = true
-			l.Summary.NumFail++
 		}
 		fmt.Printf("%v - %v - %v\n", statStr, test.TestCase, result.Output)
 	}
 }
 
-func (l *List) End(config *plan.Config) (Summary, error) {
-	return l.Summary, nil
+func (l *List) End() error {
+	return nil
 }

@@ -27,7 +27,7 @@ import (
 
 // Config describes the unstructured test plan
 type Config struct {
-	Report         string
+	Reports        []string
 	CallTimeout    time.Duration
 	WaitForHosts   []string
 	Axes           map[string]Axis
