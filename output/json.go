@@ -7,16 +7,10 @@ import (
 	"io/ioutil"
 )
 
-var StatusNames = map[execute.Status]string{
-	execute.Success: "success",
-	execute.Failed:  "failed",
-	execute.Skipped: "skipped",
-}
-
 type JSONTestReport struct {
 	Client    string         `json:"client"`
 	Arguments plan.Arguments `json:"arguments"`
-	Status    string         `json:"status"`
+	Status    execute.Status `json:"status"`
 	Output    string         `json:"output"`
 }
 
@@ -55,7 +49,7 @@ var JSON ReporterFunc = func(config *plan.Config, tests <-chan execute.TestRespo
 			behaviorReport.Tests = append(behaviorReport.Tests, JSONTestReport{
 				Client:    client,
 				Arguments: args,
-				Status:    StatusNames[result.Status],
+				Status:    result.Status,
 				Output:    result.Output,
 			})
 		}

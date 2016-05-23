@@ -20,7 +20,10 @@
 
 package execute
 
-import "github.com/yarpc/crossdock/plan"
+import (
+	"fmt"
+	"github.com/yarpc/crossdock/plan"
+)
 
 // TestResponse contains the reply from a test client, most importantly,
 // contains a list of Results for the test cases ran by the test client
@@ -48,3 +51,17 @@ const (
 	// Skipped indicates a client' TestCase did not run
 	Skipped
 )
+
+var StatusNames = map[Status]string{
+	Success: "success",
+	Failed:  "failed",
+	Skipped: "skipped",
+}
+
+func (s Status) MarshalText() (text []byte, err error) {
+	name, ok := StatusNames[s]
+	if !ok {
+		return nil, fmt.Errorf("unexpected status %d", s)
+	}
+	return []byte(name), nil
+}
