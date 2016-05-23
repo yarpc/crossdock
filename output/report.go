@@ -29,29 +29,23 @@ import (
 
 // Reporter is responsible for outputting test results
 type Reporter interface {
-	Stream(config *plan.Config, tests <-chan execute.TestResponse) Summary
-}
-
-// ReporterFunc streams test results to the console
-type ReporterFunc func(config *plan.Config, tests <-chan execute.TestResponse) Summary
-
-// Stream allows ReporterFunc to fulfill the Reporter interface
-func (f ReporterFunc) Stream(config *plan.Config, tests <-chan execute.TestResponse) Summary {
-	return f(config, tests)
+	Start(config *plan.Config)
+	Next(response execute.TestResponse, config *plan.Config)
+	End(config *plan.Config) Summary
 }
 
 // GetReporter returns a ReporterFunc for the given name
 func GetReporter(name string) (Reporter, error) {
 	// default reporter
 	if name == "" {
-		return List, nil
+		return &List{}, nil
 	}
 	// else a specific value was provided
 	switch name {
 	case "list":
-		return List, nil
+		return &List{}, nil
 	case "json":
-		return JSON, nil
+		return &JSON{}, nil
 	default:
 		return nil, fmt.Errorf("%v is not a valid reporter", name)
 	}
