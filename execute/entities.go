@@ -22,6 +22,7 @@ package execute
 
 import (
 	"fmt"
+
 	"github.com/yarpc/crossdock/plan"
 )
 
@@ -52,16 +53,19 @@ const (
 	Skipped
 )
 
-var StatusNames = map[Status]string{
-	Success: "success",
-	Failed:  "failed",
-	Skipped: "skipped",
+func (s Status) String() string {
+	switch s {
+	case Success:
+		return "success"
+	case Failed:
+		return "failed"
+	case Skipped:
+		return "skipped"
+	default:
+		return fmt.Sprintf("Status(%v)", s)
+	}
 }
 
-func (s Status) MarshalText() (text []byte, err error) {
-	name, ok := StatusNames[s]
-	if !ok {
-		return nil, fmt.Errorf("unexpected status %d", s)
-	}
-	return []byte(name), nil
+func (s Status) MarshalText() ([]byte, error) {
+	return []byte(s.String()), nil
 }
