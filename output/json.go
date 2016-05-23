@@ -26,8 +26,9 @@ type JSONReport struct {
 
 var JSON ReporterFunc = func(config *plan.Config, tests <-chan execute.TestResponse) Summary {
 	summary := Summary{}
-	report := JSONReport{}
-	report.Behaviors = make(map[string]*JSONBehaviorReport)
+	report := JSONReport{
+		Behaviors: make(map[string]*JSONBehaviorReport),
+	}
 
 	for _, behavior := range config.Behaviors {
 		behaviorReport := &JSONBehaviorReport{
