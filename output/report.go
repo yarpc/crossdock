@@ -46,6 +46,15 @@ func GetReporter(name string) (Reporter, error) {
 		return &List{}, nil
 	case "json":
 		return &JSON{}, nil
+	case "list,json":
+		fallthrough
+	case "json,list":
+		return &Mux{
+			Reporters: []Reporter{
+				&List{},
+				&JSON{},
+			},
+		}, nil
 	default:
 		return nil, fmt.Errorf("%v is not a valid reporter", name)
 	}
