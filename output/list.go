@@ -37,7 +37,8 @@ type List struct {
 	Summary Summary
 }
 
-func (l *List) Start(config *plan.Config) {
+func (l *List) Start(config *plan.Config) error {
+	return nil
 }
 
 func (l *List) Next(test execute.TestResponse, config *plan.Config) {
@@ -59,6 +60,6 @@ func (l *List) Next(test execute.TestResponse, config *plan.Config) {
 	}
 }
 
-func (l *List) End(config *plan.Config) Summary {
-	return l.Summary
+func (l *List) End(config *plan.Config) (Summary, error) {
+	return l.Summary, nil
 }

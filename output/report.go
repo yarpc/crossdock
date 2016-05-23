@@ -29,9 +29,9 @@ import (
 
 // Reporter is responsible for outputting test results
 type Reporter interface {
-	Start(config *plan.Config)
+	Start(config *plan.Config) error
 	Next(response execute.TestResponse, config *plan.Config)
-	End(config *plan.Config) Summary
+	End(config *plan.Config) (Summary, error)
 }
 
 // GetReporter returns a ReporterFunc for the given name

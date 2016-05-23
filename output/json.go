@@ -2,6 +2,7 @@ package output
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 
 	"github.com/yarpc/crossdock/execute"
@@ -29,8 +30,12 @@ type JSON struct {
 	r JSONReport
 }
 
-func (j *JSON) Start(config *plan.Config) {
+func (j *JSON) Start(config *plan.Config) error {
 	j.r.Behaviors = make(map[string]*JSONBehaviorReport)
+
+	if config.JSONReportPath == "" {
+		return fmt.Errorf("JSON_REPORT_PATH is a required environment varialbe for REPORT=json")
+	}
 
 	for _, behavior := range config.Behaviors {
 		behaviorReport := &JSONBehaviorReport{
@@ -40,20 +45,7 @@ func (j *JSON) Start(config *plan.Config) {
 		j.r.Behaviors[behavior.Name] = behaviorReport
 	}
 
-}
-
-func (j *JSON) End(config *plan.Config) Summary {
-	data, err := json.Marshal(j.r)
-	if err != nil {
-		panic(err)
-	}
-
-	err = ioutil.WriteFile(config.JSONReportPath, data, 0644)
-	if err != nil {
-		panic(err)
-	}
-
-	return j.s
+	return nil
 }
 
 func (j *JSON) Next(test execute.TestResponse, config *plan.Config) {
@@ -73,4 +65,18 @@ func (j *JSON) Next(test execute.TestResponse, config *plan.Config) {
 			Output:    result.Output,
 		})
 	}
+}
+
+func (j *JSON) End(config *plan.Config) (Summary, error) {
+	data, err := json.Marshal(j.r)
+	if err != nil {
+		return j.s, err
+	}
+
+	err = ioutil.WriteFile(config.JSONReportPath, data, 0644)
+	if err != nil {
+		return j.s, err
+	}
+
+	return j.s, nil
 }
