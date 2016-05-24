@@ -62,7 +62,7 @@ func (s Status) String() string {
 	case Skipped:
 		return "skipped"
 	default:
-		return fmt.Sprintf("Status(%v)", s)
+		return fmt.Sprintf("Status(%d)", int(s))
 	}
 }
 
