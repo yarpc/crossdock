@@ -21,7 +21,6 @@ install:
 
 script:
   - make test
-  - make crossdock
   - timeout 5 docker-compose logs || true
 
 after_success:
