@@ -21,6 +21,7 @@
 package output
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/yarpc/crossdock/execute"
@@ -54,7 +55,6 @@ func (s *Summary) Next(test execute.TestResponse) {
 	}
 }
 
-// Summarize outputs the summary to the console
 func (s *Summary) End() error {
 	fmt.Println("")
 	if s.NumSuccess > 0 {
@@ -69,7 +69,7 @@ func (s *Summary) End() error {
 
 	if s.Failed {
 		fmt.Printf("\nTests did not pass!\n\n")
-		return nil
+		return errors.New("At least one test failed")
 	}
 	fmt.Printf("\nTests passed!\n\n")
 	return nil

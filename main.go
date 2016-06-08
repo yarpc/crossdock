@@ -47,7 +47,6 @@ func main() {
 	results := execute.Run(plan)
 
 	fail := func(err error) {
-		fmt.Println(err)
 		os.Exit(1)
 	}
 
