@@ -13,6 +13,7 @@ install:
 .PHONY: test
 test:
 	go test `glide novendor`
+	./tests/fail.sh
 
 
 .PHONY: clean

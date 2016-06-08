@@ -1,0 +1,36 @@
+crossdock:
+    build: .
+    links:
+        - alpha
+        - omega
+    environment:
+      - WAIT_FOR=alpha,omega
+
+      - AXIS_CLIENT=alpha,omega
+      - AXIS_SERVER=alpha,omega
+      - AXIS_TRANSPORT=http,tchannel
+
+      - BEHAVIOR_DANCE=client,server,transport
+      - BEHAVIOR_SING=client,server,transport
+
+      - REPORT=list,json
+      - JSON_REPORT_PATH=/crossdock/report.json
+
+    volumes:
+      - .crossdock:/crossdock
+
+alpha:
+    image: breerly/hello-server
+    ports:
+        - 8080
+    environment:
+        - HELLO_PORT=8080
+        - HELLO_MESSAGE=[{"status":"passed","output":"sup"}]
+
+omega:
+    image: breerly/hello-server
+    ports:
+        - 8080
+    environment:
+        - HELLO_PORT=8080
+        - HELLO_MESSAGE=[{"status":"failed","output":"sup"}]
