@@ -33,7 +33,10 @@ func buildTestCases(plan *Plan) []TestCase {
 	var testCases []TestCase
 	for _, behavior := range plan.Config.Behaviors {
 		for _, client := range plan.Config.Axes[behavior.Clients].Values {
-			combos := recurseCombinations(0, plan, client, behavior, map[string]string{"behavior": behavior.Name})
+			combos := recurseCombinations(0, plan, client, behavior, map[string]string{
+				"behavior":       behavior.Name,
+				behavior.Clients: client,
+			})
 			testCases = append(testCases, combos...)
 		}
 	}

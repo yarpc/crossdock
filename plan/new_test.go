@@ -64,6 +64,7 @@ func TestNew(t *testing.T) {
 				Plan:   plan,
 				Client: "alpha",
 				Arguments: Arguments{
+					"client":    "alpha",
 					"server":    "alpha",
 					"transport": "http",
 					"behavior":  "dance",
@@ -73,6 +74,7 @@ func TestNew(t *testing.T) {
 				Plan:   plan,
 				Client: "alpha",
 				Arguments: Arguments{
+					"client":    "alpha",
 					"server":    "alpha",
 					"transport": "http",
 					"behavior":  "sing",
@@ -82,6 +84,7 @@ func TestNew(t *testing.T) {
 				Plan:   plan,
 				Client: "alpha",
 				Arguments: Arguments{
+					"client":    "alpha",
 					"server":    "alpha",
 					"transport": "tchannel",
 					"behavior":  "dance",
@@ -91,6 +94,7 @@ func TestNew(t *testing.T) {
 				Plan:   plan,
 				Client: "alpha",
 				Arguments: Arguments{
+					"client":    "alpha",
 					"server":    "alpha",
 					"transport": "tchannel",
 					"behavior":  "sing",
@@ -100,6 +104,7 @@ func TestNew(t *testing.T) {
 				Plan:   plan,
 				Client: "alpha",
 				Arguments: Arguments{
+					"client":    "alpha",
 					"server":    "omega",
 					"transport": "http",
 					"behavior":  "dance",
@@ -109,6 +114,7 @@ func TestNew(t *testing.T) {
 				Plan:   plan,
 				Client: "alpha",
 				Arguments: Arguments{
+					"client":    "alpha",
 					"server":    "omega",
 					"transport": "http",
 					"behavior":  "sing",
@@ -118,6 +124,7 @@ func TestNew(t *testing.T) {
 				Plan:   plan,
 				Client: "alpha",
 				Arguments: Arguments{
+					"client":    "alpha",
 					"server":    "omega",
 					"transport": "tchannel",
 					"behavior":  "dance",
@@ -127,6 +134,7 @@ func TestNew(t *testing.T) {
 				Plan:   plan,
 				Client: "alpha",
 				Arguments: Arguments{
+					"client":    "alpha",
 					"server":    "omega",
 					"transport": "tchannel",
 					"behavior":  "sing",
@@ -136,6 +144,7 @@ func TestNew(t *testing.T) {
 				Plan:   plan,
 				Client: "omega",
 				Arguments: Arguments{
+					"client":    "omega",
 					"server":    "alpha",
 					"transport": "http",
 					"behavior":  "dance",
@@ -145,6 +154,7 @@ func TestNew(t *testing.T) {
 				Plan:   plan,
 				Client: "omega",
 				Arguments: Arguments{
+					"client":    "omega",
 					"server":    "alpha",
 					"transport": "http",
 					"behavior":  "sing",
@@ -154,6 +164,7 @@ func TestNew(t *testing.T) {
 				Plan:   plan,
 				Client: "omega",
 				Arguments: Arguments{
+					"client":    "omega",
 					"server":    "alpha",
 					"transport": "tchannel",
 					"behavior":  "dance",
@@ -163,6 +174,7 @@ func TestNew(t *testing.T) {
 				Plan:   plan,
 				Client: "omega",
 				Arguments: Arguments{
+					"client":    "omega",
 					"server":    "alpha",
 					"transport": "tchannel",
 					"behavior":  "sing",
@@ -172,6 +184,7 @@ func TestNew(t *testing.T) {
 				Plan:   plan,
 				Client: "omega",
 				Arguments: Arguments{
+					"client":    "omega",
 					"server":    "omega",
 					"transport": "http",
 					"behavior":  "dance",
@@ -181,6 +194,7 @@ func TestNew(t *testing.T) {
 				Plan:   plan,
 				Client: "omega",
 				Arguments: Arguments{
+					"client":    "omega",
 					"server":    "omega",
 					"transport": "http",
 					"behavior":  "sing",
@@ -190,6 +204,7 @@ func TestNew(t *testing.T) {
 				Plan:   plan,
 				Client: "omega",
 				Arguments: Arguments{
+					"client":    "omega",
 					"server":    "omega",
 					"transport": "tchannel",
 					"behavior":  "dance",
@@ -199,6 +214,7 @@ func TestNew(t *testing.T) {
 				Plan:   plan,
 				Client: "omega",
 				Arguments: Arguments{
+					"client":    "omega",
 					"server":    "omega",
 					"transport": "tchannel",
 					"behavior":  "sing",
