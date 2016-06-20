@@ -1,4 +1,5 @@
 crossdock:
+    dns_search: .
     build: .
     links:
         - alpha
@@ -20,6 +21,7 @@ crossdock:
       - .crossdock:/crossdock
 
 alpha:
+    dns_search: .
     image: breerly/hello-server
     ports:
         - 8080
@@ -28,6 +30,7 @@ alpha:
         - HELLO_MESSAGE=[{"status":"passed","output":"sup"}]
 
 omega:
+    dns_search: .
     image: breerly/hello-server
     ports:
         - 8080
