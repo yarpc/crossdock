@@ -51,7 +51,7 @@ func Wait(hosts []string, timeout time.Duration) {
 	wg.Wait()
 
 	if !timer.Stop() {
-		log.Fatalf("Error: One or more services timed out after %d second(s)", timeout)
+		log.Fatalf("Error: One or more services timed out after %v", timeout)
 	}
 	fmt.Printf("\nAll services are up after %v!\n", time.Since(begin))
 }
@@ -66,15 +66,16 @@ func waitForHTTPRequest(host string, cancel <-chan struct{}) {
 
 	err := errors.New("init")
 	for err != nil {
+		log.Printf("HTTP: HEAD %s\n", url.String())
 		req, reqErr := http.NewRequest("HEAD", url.String(), nil)
 		if reqErr != nil {
 			log.Printf("Warning: Failed to create request for URL '%s' -  skipping service '%s'",
 				url.String(), host)
 			return
 		}
+		req.Cancel = cancel
 
-		tr := &http.Transport{}
-		client := &http.Client{Transport: tr}
+		client := &http.Client{Transport: &http.Transport{}, Timeout: 500 * time.Millisecond}
 		c := make(chan error, 1)
 		go func() {
 			_, err := client.Do(req)
@@ -83,7 +84,6 @@ func waitForHTTPRequest(host string, cancel <-chan struct{}) {
 
 		select {
 		case <-cancel:
-			tr.CancelRequest(req)
 			log.Printf("HTTP: Service %v timed out. Last error: %v", host, err)
 			<-c
 			return

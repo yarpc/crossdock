@@ -24,6 +24,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"runtime"
 	"time"
 
 	"github.com/yarpc/crossdock/execute"
@@ -32,7 +33,7 @@ import (
 )
 
 func main() {
-	fmt.Printf("\nCrossdock starting...\n\n")
+	fmt.Printf("\nCrossdock starting (go %v)...\n\n", runtime.Version())
 
 	config, err := plan.ReadConfigFromEnviron()
 	if err != nil {
