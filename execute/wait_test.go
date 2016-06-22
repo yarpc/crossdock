@@ -38,19 +38,19 @@ type testHandler struct {
 func (h *testHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	t := h.t
 	if h.delay != 0 {
-		t.Logf("serverHTTP: Delaying for %v", h.delay)
+		t.Logf("testHandler: Delaying for %v", h.delay)
 		time.Sleep(h.delay)
 	}
 	if h.notReadyCount > 0 {
 		h.notReadyCount -= 1
-		t.Logf("serverHTTP: Returning %v (left: %v)",
+		t.Logf("testHandler: Returning %v (left: %v)",
 			http.StatusServiceUnavailable, h.notReadyCount)
 		http.Error(w, "Server not ready", http.StatusServiceUnavailable)
 		return
 	}
 	if r.Method == "HEAD" {
 		w.Header().Add("Content-Length", "0")
-		t.Logf("serverHTTP: Returning %v", http.StatusOK)
+		t.Logf("testHandler: Returning %v", http.StatusOK)
 		return
 	}
 	http.NotFound(w, r)
