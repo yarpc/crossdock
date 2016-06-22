@@ -78,7 +78,11 @@ func waitForHTTPRequest(host string, cancel <-chan struct{}) {
 		client := &http.Client{Transport: &http.Transport{}, Timeout: 500 * time.Millisecond}
 		c := make(chan error, 1)
 		go func() {
-			_, err := client.Do(req)
+			resp, err := client.Do(req)
+			if err == nil && resp.StatusCode != http.StatusOK {
+				err = errors.New(fmt.Sprintf("Expecting %v: got %v",
+					http.StatusOK, resp.Status))
+			}
 			c <- err
 		}()
 
