@@ -61,7 +61,7 @@ func TestObvious(t *testing.T) {
 	defer ts.Close()
 	host := ts.Listener.Addr().String()
 	cancel := make(chan struct{})
-	timer := time.AfterFunc(time.Second*2, func() {
+	timer := time.AfterFunc(2*time.Second, func() {
 		close(cancel)
 	})
 	waitForHTTPRequest(host, cancel)
@@ -72,11 +72,11 @@ func TestTooSlow(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping test in short mode.")
 	}
-	ts := httptest.NewServer(&testHandler{t: t, delay: 1 * time.Second})
+	ts := httptest.NewServer(&testHandler{t: t, delay: time.Second})
 	defer ts.Close()
 	host := ts.Listener.Addr().String()
 	cancel := make(chan struct{})
-	timer := time.AfterFunc(time.Second*2, func() {
+	timer := time.AfterFunc(2*time.Second, func() {
 		close(cancel)
 	})
 	waitForHTTPRequest(host, cancel)
@@ -91,7 +91,7 @@ func TestNotReadyThenOk(t *testing.T) {
 	defer ts.Close()
 	host := ts.Listener.Addr().String()
 	cancel := make(chan struct{})
-	timer := time.AfterFunc(time.Second*2, func() {
+	timer := time.AfterFunc(2*time.Second, func() {
 		close(cancel)
 	})
 	waitForHTTPRequest(host, cancel)
