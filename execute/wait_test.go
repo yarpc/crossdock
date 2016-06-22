@@ -57,7 +57,7 @@ func (h *testHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func TestObvious(t *testing.T) {
-	ts := httptest.NewServer(&testHandler{t: t, delay: 0 * time.Second})
+	ts := httptest.NewServer(&testHandler{t: t})
 	defer ts.Close()
 	host := ts.Listener.Addr().String()
 	cancel := make(chan struct{})
