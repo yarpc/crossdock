@@ -80,8 +80,8 @@ func waitForHTTPRequest(host string, cancel <-chan struct{}) {
 		go func() {
 			resp, err := client.Do(req)
 			if err == nil && resp.StatusCode != http.StatusOK {
-				err = errors.New(fmt.Sprintf("Expecting %v: got %v",
-					http.StatusOK, resp.Status))
+				err = fmt.Errorf("expecting %v, got %v",
+					http.StatusOK, resp.Status)
 			}
 			c <- err
 		}()
