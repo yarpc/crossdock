@@ -65,7 +65,7 @@ func TestObvious(t *testing.T) {
 		close(cancel)
 	})
 	waitForHTTPRequest(host, cancel)
-	require.True(t, timer.Stop())
+	require.True(t, timer.Stop(), "test shouldn't take more than 2 seconds")
 }
 
 func TestTooSlow(t *testing.T) {
@@ -80,7 +80,7 @@ func TestTooSlow(t *testing.T) {
 		close(cancel)
 	})
 	waitForHTTPRequest(host, cancel)
-	require.False(t, timer.Stop())
+	require.False(t, timer.Stop(), "test should timeout")
 }
 
 func TestNotReadyThenOk(t *testing.T) {
@@ -95,5 +95,5 @@ func TestNotReadyThenOk(t *testing.T) {
 		close(cancel)
 	})
 	waitForHTTPRequest(host, cancel)
-	require.True(t, timer.Stop())
+	require.True(t, timer.Stop(), "test shouldn't take more than 2 seconds")
 }
