@@ -24,8 +24,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/yarpc/crossdock/execute"
-	"github.com/yarpc/crossdock/plan"
+	"github.com/crossdock/crossdock/execute"
+	"github.com/crossdock/crossdock/plan"
 )
 
 // Summary contains an account of the test run

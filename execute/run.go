@@ -27,7 +27,7 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/yarpc/crossdock/plan"
+	"github.com/crossdock/crossdock/plan"
 
 	"golang.org/x/net/context"
 	"golang.org/x/net/context/ctxhttp"

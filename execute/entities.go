@@ -23,7 +23,7 @@ package execute
 import (
 	"fmt"
 
-	"github.com/yarpc/crossdock/plan"
+	"github.com/crossdock/crossdock/plan"
 )
 
 // TestResponse contains the reply from a test client, most importantly,

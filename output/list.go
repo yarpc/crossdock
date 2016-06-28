@@ -23,8 +23,8 @@ package output
 import (
 	"fmt"
 
-	"github.com/yarpc/crossdock/execute"
-	"github.com/yarpc/crossdock/plan"
+	"github.com/crossdock/crossdock/execute"
+	"github.com/crossdock/crossdock/plan"
 
 	"github.com/fatih/color"
 )

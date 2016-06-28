@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/yarpc/crossdock/execute"
-	"github.com/yarpc/crossdock/plan"
+	"github.com/crossdock/crossdock/execute"
+	"github.com/crossdock/crossdock/plan"
 )
 
 type JSONTestReport struct {

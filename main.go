@@ -26,9 +26,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/yarpc/crossdock/execute"
-	"github.com/yarpc/crossdock/output"
-	"github.com/yarpc/crossdock/plan"
+	"github.com/crossdock/crossdock/execute"
+	"github.com/crossdock/crossdock/output"
+	"github.com/crossdock/crossdock/plan"
 )
 
 func main() {
