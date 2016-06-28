@@ -1,4 +1,4 @@
-# Crossdock [![Build Status](https://travis-ci.org/yarpc/crossdock.svg?branch=master)](https://travis-ci.org/yarpc/crossdock) [![](https://badge.imagelayers.io/yarpc/crossdock:latest.svg)](https://imagelayers.io/?images=yarpc/crossdock:latest 'Get your own badge on imagelayers.io')
+# Crossdock [![Build Status](https://travis-ci.org/crossdock/crossdock.svg)](https://travis-ci.org/crossdock/crossdock) [![](https://badge.imagelayers.io/crossdock/crossdock:latest.svg)](https://imagelayers.io/?images=crossdock/crossdock:latest 'Get your own badge on imagelayers.io')
 
 A tiny Docker appliance for running cross-repo integration tests; Crossdock is:
 
@@ -11,14 +11,14 @@ A tiny Docker appliance for running cross-repo integration tests; Crossdock is:
 
 ## How It Works
 
-Crossdock is [published in Docker Hub](https://hub.docker.com/r/yarpc/crossdock/) and is
+Crossdock is [published in Docker Hub](https://hub.docker.com/r/crossdock/crossdock/) and is
 meant to be used with [Docker Compose](https://docs.docker.com/compose/) directly from your repos.
 
 Given the following `docker-compose.yml`:
 
 ```yml
 crossdock:
-    image: yarpc/crossdock
+    image: crossdock/crossdock
     dns_search: .  # Ensures unified DNS config.
     links:
         - alpha

@@ -8,7 +8,7 @@ Adding additional Test Clients to the mix is easy. To demonstrate, we're going t
 Let's add a new client to our `docker-compose.yml` now:
 ```yml
 crossdock:
-    image: yarpc/crossdock
+    image: crossdock/crossdock
     dns_search: .
     links:
         - client

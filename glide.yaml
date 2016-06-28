@@ -1,4 +1,4 @@
-package: github.com/yarpc/crossdock
+package: github.com/crossdock/crossdock
 import:
 - package: github.com/olekukonko/tablewriter
 - package: github.com/stretchr/testify

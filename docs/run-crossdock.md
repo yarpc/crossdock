@@ -6,7 +6,7 @@ To run Crossdock, we'll need to configure our `docker-compose.yml`:
 
 ```yml
 crossdock:
-    image: yarpc/crossdock
+    image: crossdock/crossdock
     dns_search: .
     links:
         - client
@@ -23,7 +23,7 @@ client:
 
 In the configuration above, the `crossdock:` entry can be read as:
 
-> Define a container named crossdock that runs the [yarpc/crossdock](https://hub.docker.com/r/yarpc/crossdock/) image,
+> Define a container named crossdock that runs the [crossdock/crossdock](https://hub.docker.com/r/crossdock/crossdock/) image,
 > assigns our Test Client as a runtime dependency,
 > and defines a custom Axis "behavior".
 
