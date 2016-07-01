@@ -26,201 +26,157 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestCombinations(t *testing.T) {
+	tests := []struct {
+		i [][]string
+		o [][]string
+	}{
+		{
+			i: nil,
+			o: nil,
+		},
+		{
+			i: [][]string{},
+			o: nil,
+		},
+		{
+			i: [][]string{
+				{},
+			},
+			o: nil,
+		},
+		{
+			i: [][]string{
+				{"x1"},
+				{},
+			},
+			o: nil,
+		},
+		{
+			i: [][]string{
+				{"x1"},
+				{"y1"},
+			},
+			o: [][]string{
+				{"x1", "y1"},
+			},
+		},
+		{
+			i: [][]string{
+				{"x1"},
+				{"y1", "y2", "y3"},
+			},
+			o: [][]string{
+				{"x1", "y1"},
+				{"x1", "y2"},
+				{"x1", "y3"},
+			},
+		},
+		{
+			i: [][]string{
+				{"x1"},
+				{"y1", "y2", "y3"},
+				{"z1", "z2"},
+			},
+			o: [][]string{
+				{"x1", "y1", "z1"},
+				{"x1", "y2", "z1"},
+				{"x1", "y3", "z1"},
+				{"x1", "y1", "z2"},
+				{"x1", "y2", "z2"},
+				{"x1", "y3", "z2"},
+			},
+		},
+		{
+			i: [][]string{
+				{"x1", "x2"},
+				{"y1", "y2"},
+				{"z1", "z2"},
+			},
+			o: [][]string{
+				{"x1", "y1", "z1"},
+				{"x2", "y1", "z1"},
+				{"x1", "y2", "z1"},
+				{"x2", "y2", "z1"},
+				{"x1", "y1", "z2"},
+				{"x2", "y1", "z2"},
+				{"x1", "y2", "z2"},
+				{"x2", "y2", "z2"},
+			},
+		},
+	}
+	for _, tt := range tests {
+		assert.Equal(t, tt.o, combinations(tt.i))
+	}
+}
+
 func TestNew(t *testing.T) {
 	plan := New(&Config{
 		WaitForHosts: []string{"alpha", "omega"},
-		Axes: map[string]Axis{
-			"client":    {Name: "client", Values: []string{"alpha", "omega"}},
-			"server":    {Name: "server", Values: []string{"alpha", "omega"}},
-			"transport": {Name: "transport", Values: []string{"http", "tchannel"}},
+		Axes: Axes{
+			{Name: "client", Values: []string{"alpha", "omega"}},
+			{Name: "server", Values: []string{"alpha", "omega"}},
+			{Name: "transport", Values: []string{"http", "tchannel"}},
 		},
-		Behaviors: map[string]Behavior{
-			"dance": {Name: "dance",
-				Clients: "client",
-				Params:  []string{"server", "transport"},
+		Behaviors: []Behavior{
+			{Name: "dance",
+				ClientAxis: "client",
+				ParamsAxes: []string{"server", "transport"},
 			},
-			"sing": {Name: "sing",
-				Clients: "client",
-				Params:  []string{"server", "transport"},
+			{Name: "sing",
+				ClientAxis: "client",
+				ParamsAxes: []string{"server", "transport"},
 			}}})
 
-	plan.Sort(func(i, j int) bool {
-		if plan.TestCases[i].Client != plan.TestCases[j].Client {
-			return plan.TestCases[i].Client < plan.TestCases[j].Client
-		}
-		if plan.TestCases[i].Arguments["server"] != plan.TestCases[j].Arguments["server"] {
-			return plan.TestCases[i].Arguments["server"] < plan.TestCases[j].Arguments["server"]
-		}
-		if plan.TestCases[i].Arguments["transport"] != plan.TestCases[j].Arguments["transport"] {
-			return plan.TestCases[i].Arguments["transport"] < plan.TestCases[j].Arguments["transport"]
-		}
+	wanted := []TestCase{
+		TestCase{Plan: plan, Client: "alpha",
+			Arguments: TestClientArgs{"behavior": "dance",
+				"client": "alpha", "server": "alpha", "transport": "http"}},
+		TestCase{Plan: plan, Client: "omega",
+			Arguments: TestClientArgs{"transport": "http", "behavior": "dance",
+				"client": "omega", "server": "alpha"}},
+		TestCase{Plan: plan, Client: "alpha",
+			Arguments: TestClientArgs{"behavior": "dance", "client": "alpha",
+				"server": "omega", "transport": "http"}},
+		TestCase{Plan: plan, Client: "omega",
+			Arguments: TestClientArgs{"behavior": "dance", "client": "omega",
+				"server": "omega", "transport": "http"}},
+		TestCase{Plan: plan, Client: "alpha",
+			Arguments: TestClientArgs{"behavior": "dance", "client": "alpha",
+				"server": "alpha", "transport": "tchannel"}},
+		TestCase{Plan: plan, Client: "omega",
+			Arguments: TestClientArgs{"client": "omega", "server": "alpha",
+				"transport": "tchannel", "behavior": "dance"}},
+		TestCase{Plan: plan, Client: "alpha",
+			Arguments: TestClientArgs{"server": "omega", "transport": "tchannel",
+				"behavior": "dance", "client": "alpha"}},
+		TestCase{Plan: plan, Client: "omega",
+			Arguments: TestClientArgs{"transport": "tchannel", "behavior": "dance",
+				"client": "omega", "server": "omega"}},
+		TestCase{Plan: plan, Client: "alpha",
+			Arguments: TestClientArgs{"client": "alpha", "server": "alpha",
+				"transport": "http", "behavior": "sing"}},
+		TestCase{Plan: plan, Client: "omega",
+			Arguments: TestClientArgs{"behavior": "sing", "client": "omega",
+				"server": "alpha", "transport": "http"}},
+		TestCase{Plan: plan, Client: "alpha",
+			Arguments: TestClientArgs{"behavior": "sing", "client": "alpha",
+				"server": "omega", "transport": "http"}},
+		TestCase{Plan: plan, Client: "omega",
+			Arguments: TestClientArgs{"behavior": "sing", "client": "omega",
+				"server": "omega", "transport": "http"}},
+		TestCase{Plan: plan, Client: "alpha",
+			Arguments: TestClientArgs{"server": "alpha", "transport": "tchannel",
+				"behavior": "sing", "client": "alpha"}},
+		TestCase{Plan: plan, Client: "omega",
+			Arguments: TestClientArgs{"behavior": "sing", "client": "omega",
+				"server": "alpha", "transport": "tchannel"}},
+		TestCase{Plan: plan, Client: "alpha",
+			Arguments: TestClientArgs{"behavior": "sing", "client": "alpha",
+				"server": "omega", "transport": "tchannel"}},
+		TestCase{Plan: plan, Client: "omega",
+			Arguments: TestClientArgs{"behavior": "sing", "client": "omega",
+				"server": "omega", "transport": "tchannel"}}}
 
-		return plan.TestCases[i].Arguments["behavior"] < plan.TestCases[j].Arguments["behavior"]
-	})
-
-	assert.Equal(t,
-		[]TestCase{
-			{
-				Plan:   plan,
-				Client: "alpha",
-				Arguments: Arguments{
-					"client":    "alpha",
-					"server":    "alpha",
-					"transport": "http",
-					"behavior":  "dance",
-				},
-			},
-			{
-				Plan:   plan,
-				Client: "alpha",
-				Arguments: Arguments{
-					"client":    "alpha",
-					"server":    "alpha",
-					"transport": "http",
-					"behavior":  "sing",
-				},
-			},
-			{
-				Plan:   plan,
-				Client: "alpha",
-				Arguments: Arguments{
-					"client":    "alpha",
-					"server":    "alpha",
-					"transport": "tchannel",
-					"behavior":  "dance",
-				},
-			},
-			{
-				Plan:   plan,
-				Client: "alpha",
-				Arguments: Arguments{
-					"client":    "alpha",
-					"server":    "alpha",
-					"transport": "tchannel",
-					"behavior":  "sing",
-				},
-			},
-			{
-				Plan:   plan,
-				Client: "alpha",
-				Arguments: Arguments{
-					"client":    "alpha",
-					"server":    "omega",
-					"transport": "http",
-					"behavior":  "dance",
-				},
-			},
-			{
-				Plan:   plan,
-				Client: "alpha",
-				Arguments: Arguments{
-					"client":    "alpha",
-					"server":    "omega",
-					"transport": "http",
-					"behavior":  "sing",
-				},
-			},
-			{
-				Plan:   plan,
-				Client: "alpha",
-				Arguments: Arguments{
-					"client":    "alpha",
-					"server":    "omega",
-					"transport": "tchannel",
-					"behavior":  "dance",
-				},
-			},
-			{
-				Plan:   plan,
-				Client: "alpha",
-				Arguments: Arguments{
-					"client":    "alpha",
-					"server":    "omega",
-					"transport": "tchannel",
-					"behavior":  "sing",
-				},
-			},
-			{
-				Plan:   plan,
-				Client: "omega",
-				Arguments: Arguments{
-					"client":    "omega",
-					"server":    "alpha",
-					"transport": "http",
-					"behavior":  "dance",
-				},
-			},
-			{
-				Plan:   plan,
-				Client: "omega",
-				Arguments: Arguments{
-					"client":    "omega",
-					"server":    "alpha",
-					"transport": "http",
-					"behavior":  "sing",
-				},
-			},
-			{
-				Plan:   plan,
-				Client: "omega",
-				Arguments: Arguments{
-					"client":    "omega",
-					"server":    "alpha",
-					"transport": "tchannel",
-					"behavior":  "dance",
-				},
-			},
-			{
-				Plan:   plan,
-				Client: "omega",
-				Arguments: Arguments{
-					"client":    "omega",
-					"server":    "alpha",
-					"transport": "tchannel",
-					"behavior":  "sing",
-				},
-			},
-			{
-				Plan:   plan,
-				Client: "omega",
-				Arguments: Arguments{
-					"client":    "omega",
-					"server":    "omega",
-					"transport": "http",
-					"behavior":  "dance",
-				},
-			},
-			{
-				Plan:   plan,
-				Client: "omega",
-				Arguments: Arguments{
-					"client":    "omega",
-					"server":    "omega",
-					"transport": "http",
-					"behavior":  "sing",
-				},
-			},
-			{
-				Plan:   plan,
-				Client: "omega",
-				Arguments: Arguments{
-					"client":    "omega",
-					"server":    "omega",
-					"transport": "tchannel",
-					"behavior":  "dance",
-				},
-			},
-			{
-				Plan:   plan,
-				Client: "omega",
-				Arguments: Arguments{
-					"client":    "omega",
-					"server":    "omega",
-					"transport": "tchannel",
-					"behavior":  "sing",
-				},
-			},
-		},
-		plan.TestCases,
-	)
+	assert.Equal(t, plan.TestCases, wanted)
 }

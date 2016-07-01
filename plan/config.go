@@ -23,6 +23,7 @@ package plan
 import (
 	"errors"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -49,17 +50,19 @@ func ReadConfigFromEnviron() (*Config, error) {
 	waitForHosts := trimCollection(strings.Split(os.Getenv(waitKey), ","))
 	reports := trimCollection(strings.Split(strings.ToLower(os.Getenv(reportKey)), ","))
 
-	axes := make(map[string]Axis)
-	behaviors := make(map[string]Behavior)
+	var axes Axes
+	var behaviors Behaviors
 	for _, e := range os.Environ() {
 		if strings.HasPrefix(e, axisKeyPrefix) {
 			axis := parseAxis(strings.TrimPrefix(e, axisKeyPrefix))
-			axes[axis.Name] = axis
+			axes = append(axes, axis)
 		} else if strings.HasPrefix(e, behaviorKeyPrefix) {
 			behavior := parseBehavior(strings.TrimPrefix(e, behaviorKeyPrefix))
-			behaviors[behavior.Name] = behavior
+			behaviors = append(behaviors, behavior)
 		}
 	}
+	sort.Sort(axes)
+	sort.Sort(behaviors)
 
 	jsonReportPath := os.Getenv(jsonReportPathKey)
 
@@ -83,10 +86,12 @@ func parseBehavior(d string) Behavior {
 	key := strings.ToLower(pair[0])
 	values := strings.Split(pair[1], ",")
 	values = trimCollection(values)
+	sort.Strings(values)
+
 	behavior := Behavior{
-		Name:    key,
-		Clients: values[0],
-		Params:  values[1:],
+		Name:       key,
+		ClientAxis: values[0],
+		ParamsAxes: values[1:],
 	}
 
 	return behavior
@@ -97,6 +102,7 @@ func parseAxis(d string) Axis {
 	key := strings.ToLower(pair[0])
 	values := strings.Split(pair[1], ",")
 	values = trimCollection(values)
+	sort.Strings(values)
 
 	axis := Axis{
 		Name:   key,
@@ -107,12 +113,13 @@ func parseAxis(d string) Axis {
 }
 
 func validateConfig(config *Config) error {
+	axes := config.Axes.Indexed()
 	for _, behavior := range config.Behaviors {
-		if _, ok := config.Axes[behavior.Clients]; !ok {
-			return errors.New("Can't find AXIS environment for: " + behavior.Clients)
+		if _, ok := axes[behavior.ClientAxis]; !ok {
+			return errors.New("Can't find AXIS environment for: " + behavior.ClientAxis)
 		}
-		for _, param := range behavior.Params {
-			if _, ok := config.Axes[param]; !ok {
+		for _, param := range behavior.ParamsAxes {
+			if _, ok := axes[param]; !ok {
 				return errors.New("Can't find AXIS environment for: " + param)
 			}
 		}

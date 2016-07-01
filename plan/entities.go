@@ -20,18 +20,15 @@
 
 package plan
 
-import (
-	"sort"
-	"time"
-)
+import "time"
 
 // Config describes the unstructured test plan
 type Config struct {
 	Reports        []string
 	CallTimeout    time.Duration
 	WaitForHosts   []string
-	Axes           map[string]Axis
-	Behaviors      map[string]Behavior
+	Axes           Axes
+	Behaviors      Behaviors
 	JSONReportPath string
 }
 
@@ -41,12 +38,32 @@ type Axis struct {
 	Values []string
 }
 
-// Behavior represents the test behavior will be triggered by crossdock
-type Behavior struct {
-	Name    string
-	Clients string
-	Params  []string
+type Axes []Axis
+
+func (a Axes) Len() int           { return len(a) }
+func (a Axes) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a Axes) Less(i, j int) bool { return a[i].Name < a[j].Name }
+
+func (a Axes) Indexed() map[string]Axis {
+	axes := make(map[string]Axis, len(a))
+	for _, axis := range a {
+		axes[axis.Name] = axis
+	}
+	return axes
 }
+
+// Behavior represents the test behavior that will be triggered by crossdock
+type Behavior struct {
+	Name       string
+	ClientAxis string
+	ParamsAxes []string
+}
+
+type Behaviors []Behavior
+
+func (b Behaviors) Len() int           { return len(b) }
+func (b Behaviors) Swap(i, j int)      { b[i], b[j] = b[j], b[i] }
+func (b Behaviors) Less(i, j int) bool { return b[i].Name < b[j].Name }
 
 // Plan describes the entirety of the test program
 type Plan struct {
@@ -55,33 +72,12 @@ type Plan struct {
 	less      func(i, j int) bool
 }
 
-// Len is part of sort.Interface.
-func (p *Plan) Len() int {
-	return len(p.TestCases)
-}
-
-// Swap is part of sort.Interface.
-func (p *Plan) Swap(i, j int) {
-	p.TestCases[i], p.TestCases[j] = p.TestCases[j], p.TestCases[i]
-}
-
-// Less is part of sort.Interface. It is implemented by calling the "by" closure in the sorter.
-func (p *Plan) Less(i, j int) bool {
-	return p.less(i, j)
-}
-
-// Sort is a method on the function type, By, that sorts the argument slice according to the function.
-func (p *Plan) Sort(less func(i, j int) bool) {
-	p.less = less
-	sort.Sort(p)
-}
-
 // TestCase represents the request made to test clients.
 type TestCase struct {
 	Plan      *Plan
 	Client    string
-	Arguments Arguments
+	Arguments TestClientArgs
 }
 
-// Arguments represents custom args to pass to test client.
-type Arguments map[string]string
+// TestClientArgs represents custom args to pass to test client.
+type TestClientArgs map[string]string

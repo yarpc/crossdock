@@ -10,10 +10,10 @@ import (
 )
 
 type JSONTestReport struct {
-	Client    string         `json:"client"`
-	Arguments plan.Arguments `json:"arguments"`
-	Status    execute.Status `json:"status"`
-	Output    string         `json:"output"`
+	Client    string              `json:"client"`
+	Arguments plan.TestClientArgs `json:"arguments"`
+	Status    execute.Status      `json:"status"`
+	Output    string              `json:"output"`
 }
 
 type JSONBehaviorReport struct {
@@ -42,7 +42,7 @@ func (j *JSON) Start(plan *plan.Plan) error {
 	for _, behavior := range config.Behaviors {
 		behaviorReport := &JSONBehaviorReport{
 			Tests:  make([]JSONTestReport, 0, 10),
-			Params: behavior.Params,
+			Params: behavior.ParamsAxes,
 		}
 		j.report.Behaviors[behavior.Name] = behaviorReport
 	}

@@ -31,39 +31,54 @@ func New(config *Config) *Plan {
 
 func buildTestCases(plan *Plan) []TestCase {
 	var testCases []TestCase
+	axesIndex := plan.Config.Axes.Indexed()
 	for _, behavior := range plan.Config.Behaviors {
-		for _, client := range plan.Config.Axes[behavior.Clients].Values {
-			combos := recurseCombinations(0, plan, client, behavior, map[string]string{
-				"behavior":       behavior.Name,
-				behavior.Clients: client,
-			})
-			testCases = append(testCases, combos...)
+		var selectedAxes [][]string
+		selectedAxes = append(selectedAxes, axesIndex[behavior.ClientAxis].Values)
+		for _, paramAxis := range behavior.ParamsAxes {
+			selectedAxes = append(selectedAxes, axesIndex[paramAxis].Values)
+		}
+		for _, combination := range combinations(selectedAxes) {
+			client := combination[0]     // first element is the Client.
+			arguments := combination[1:] // remaining is test arguments in order.
+			testArgs := TestClientArgs{
+				"behavior":          behavior.Name,
+				behavior.ClientAxis: client,
+			}
+			for idx, arg := range arguments {
+				testArgs[behavior.ParamsAxes[idx]] = arg
+			}
+			t := TestCase{
+				Plan:      plan,
+				Client:    client,
+				Arguments: testArgs,
+			}
+			testCases = append(testCases, t)
 		}
 	}
 	return testCases
 }
 
-func recurseCombinations(level int, plan *Plan, client string, behavior Behavior, args Arguments) []TestCase {
-	if level == len(behavior.Params) {
-		return []TestCase{{
-			Plan:      plan,
-			Client:    client,
-			Arguments: copyArgs(args),
-		}}
+// combinations takes multiple lists of strings and return multiple lists of
+// all the possible combinations. Sublists don't need to be of the same size,
+// the output order is dependent of the input order.
+// eg: [[x1, x2], [y1, y2]] -> [[x1, y1], [x1, y2], [x2, y1], [x2, y2]]
+func combinations(pool [][]string) [][]string {
+	if len(pool) == 0 {
+		return nil
 	}
-	var testCases []TestCase
-	param := behavior.Params[level]
-	for _, axis := range plan.Config.Axes[param].Values {
-		args[param] = axis
-		testCases = append(testCases, recurseCombinations(level+1, plan, client, behavior, args)...)
+	if len(pool) == 1 {
+		var r [][]string
+		for _, v := range pool[0] {
+			r = append(r, []string{v})
+		}
+		return r
 	}
-	return testCases
-}
-
-func copyArgs(args Arguments) Arguments {
-	copy := make(map[string]string)
-	for k, v := range args {
-		copy[k] = v
+	var r [][]string
+	for _, remaining := range combinations(pool[1:]) {
+		for _, head := range pool[0] {
+			r = append(r, append([]string{head}, remaining...))
+		}
 	}
-	return copy
+	return r
 }
