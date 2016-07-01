@@ -29,7 +29,7 @@ import (
 
 // Reporter is responsible for outputting test results
 type Reporter interface {
-	Start(config *plan.Config) error
+	Start(plan *plan.Plan) error
 	Next(response execute.TestResponse)
 	End() error
 }

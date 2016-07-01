@@ -30,7 +30,8 @@ type JSON struct {
 	path   string
 }
 
-func (j *JSON) Start(config *plan.Config) error {
+func (j *JSON) Start(plan *plan.Plan) error {
+	config := plan.Config
 	j.path = config.JSONReportPath
 	j.report.Behaviors = make(map[string]*JSONBehaviorReport)
 

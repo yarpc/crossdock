@@ -37,7 +37,7 @@ type list struct{}
 
 var List list
 
-func (list) Start(config *plan.Config) error {
+func (list) Start(plan *plan.Plan) error {
 	return nil
 }
 

@@ -23,7 +23,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
 	"time"
 
 	"github.com/crossdock/crossdock/execute"
@@ -38,30 +37,28 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	reporter, err := output.GetReporter(config.Reports)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	plan := plan.New(config)
 
-	fmt.Printf("Waiting on WAIT_FOR=%v\n\n", plan.Config.WaitForHosts)
+	if err = reporter.Start(plan); err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("\nWaiting on WAIT_FOR=%v\n\n", plan.Config.WaitForHosts)
 	execute.Wait(plan.Config.WaitForHosts, time.Duration(30)*time.Second)
 
 	fmt.Printf("\nExecuting Matrix...\n\n")
 	results := execute.Run(plan)
 
-	fail := func(err error) {
-		os.Exit(1)
-	}
-
-	reporter, err := output.GetReporter(config.Reports)
-	if err != nil {
-		fail(err)
-	}
-
-	if err = reporter.Start(config); err != nil {
-		fail(err)
-	}
 	for test := range results {
 		reporter.Next(test)
 	}
 	if err := reporter.End(); err != nil {
-		fail(err)
+		log.Fatal(err)
 	}
 }

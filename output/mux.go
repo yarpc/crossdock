@@ -7,9 +7,9 @@ import (
 
 type Mux []Reporter
 
-func (r Mux) Start(config *plan.Config) error {
+func (r Mux) Start(plan *plan.Plan) error {
 	for _, reporter := range r {
-		if err := reporter.Start(config); err != nil {
+		if err := reporter.Start(plan); err != nil {
 			return err
 		}
 	}

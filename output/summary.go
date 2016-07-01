@@ -37,7 +37,7 @@ type Summary struct {
 	NumSkipped int
 }
 
-func (s *Summary) Start(config *plan.Config) error {
+func (s *Summary) Start(plan *plan.Plan) error {
 	return nil
 }
 
