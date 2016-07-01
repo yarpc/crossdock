@@ -44,7 +44,9 @@ func GetReporter(names []string) (Reporter, error) {
 	for _, name := range names {
 		switch name {
 		case "list":
-			mux = append(mux, List)
+			mux = append(mux, &List{Compact: false})
+		case "compact":
+			mux = append(mux, &List{Compact: true})
 		case "json":
 			mux = append(mux, &JSON{})
 		default:
