@@ -42,7 +42,7 @@ func (h *testHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		time.Sleep(h.delay)
 	}
 	if h.notReadyCount > 0 {
-		h.notReadyCount -= 1
+		h.notReadyCount--
 		t.Logf("testHandler: Returning %v (left: %v)",
 			http.StatusServiceUnavailable, h.notReadyCount)
 		http.Error(w, "Server not ready", http.StatusServiceUnavailable)

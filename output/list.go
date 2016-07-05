@@ -35,6 +35,7 @@ var red = color.New(color.FgRed).SprintFunc()
 
 type list struct{}
 
+// List is the output reporter as a list.
 var List list
 
 func (list) Start(plan *plan.Plan) error {

@@ -5,6 +5,7 @@ import (
 	"github.com/crossdock/crossdock/plan"
 )
 
+// Mux multiplexes to multiples reporters.
 type Mux []Reporter
 
 func (r Mux) Start(plan *plan.Plan) error {
