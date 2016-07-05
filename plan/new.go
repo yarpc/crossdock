@@ -31,7 +31,7 @@ func New(config *Config) *Plan {
 
 func buildTestCases(plan *Plan) []TestCase {
 	var testCases []TestCase
-	axesIndex := plan.Config.Axes.Indexed()
+	axesIndex := plan.Config.Axes.Index()
 	for _, behavior := range plan.Config.Behaviors {
 		var selectedAxes [][]string
 		selectedAxes = append(selectedAxes, axesIndex[behavior.ClientAxis].Values)

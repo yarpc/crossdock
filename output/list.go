@@ -36,6 +36,7 @@ var yellow = color.New(color.FgYellow).SprintFunc()
 var red = color.New(color.FgRed).SprintFunc()
 var blue = color.New(color.FgBlue).SprintFunc()
 
+// List is the output reporter as a list, with compact option.
 type List struct {
 	Compact bool
 	dotted  bool

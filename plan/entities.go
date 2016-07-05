@@ -38,13 +38,15 @@ type Axis struct {
 	Values []string
 }
 
+// Axes is a slice of "Axis"
 type Axes []Axis
 
 func (a Axes) Len() int           { return len(a) }
 func (a Axes) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a Axes) Less(i, j int) bool { return a[i].Name < a[j].Name }
 
-func (a Axes) Indexed() map[string]Axis {
+// Index returns the Axes indexed by name of Axis.
+func (a Axes) Index() map[string]Axis {
 	axes := make(map[string]Axis, len(a))
 	for _, axis := range a {
 		axes[axis.Name] = axis
@@ -59,6 +61,7 @@ type Behavior struct {
 	ParamsAxes []string
 }
 
+// Behaviors is a sortable slice of "Behavior".
 type Behaviors []Behavior
 
 func (b Behaviors) Len() int           { return len(b) }

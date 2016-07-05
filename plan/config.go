@@ -113,7 +113,7 @@ func parseAxis(d string) Axis {
 }
 
 func validateConfig(config *Config) error {
-	axes := config.Axes.Indexed()
+	axes := config.Axes.Index()
 	for _, behavior := range config.Behaviors {
 		if _, ok := axes[behavior.ClientAxis]; !ok {
 			return errors.New("Can't find AXIS environment for: " + behavior.ClientAxis)
