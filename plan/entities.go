@@ -32,7 +32,7 @@ type Config struct {
 	JSONReportPath string
 }
 
-// Axis represents combinational args to be passed to the test clients
+// Axes is a collection of Axis objects sortable by axis name.
 type Axis struct {
 	Name   string
 	Values []string
@@ -61,7 +61,7 @@ type Behavior struct {
 	ParamsAxes []string
 }
 
-// Behaviors is a sortable slice of "Behavior".
+// Behaviors is a collection of Behavior objects sortable by behavior name.
 type Behaviors []Behavior
 
 func (b Behaviors) Len() int           { return len(b) }
