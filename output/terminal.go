@@ -22,48 +22,45 @@ package output
 
 import (
 	"fmt"
+	"sort"
+	"strings"
 
 	"github.com/crossdock/crossdock/execute"
 	"github.com/crossdock/crossdock/plan"
+
+	"github.com/fatih/color"
 )
 
-// List is a simple Reporter that prints the test output to stdout.
-type List struct{}
+var green = color.New(color.FgGreen).SprintFunc()
+var red = color.New(color.FgRed).SprintFunc()
+var blue = color.New(color.FgBlue).SprintFunc()
+var grey = color.New(color.FgBlack, color.Bold).SprintFunc()
 
-func (list *List) Start(plan *plan.Plan) error {
-	return nil
+func statusToColoredSymbol(status execute.Status) string {
+	switch status {
+	case execute.Success:
+		return green("✓")
+	case execute.Skipped:
+		return grey("S")
+	default:
+		return red("✗")
+	}
 }
 
-func (list *List) Next(test execute.TestResponse) {
-	if len(test.Results) == 0 {
-		fmt.Printf("%v %v ⇒ (no results)\n", blue("∅"), fmtTestCase(test.TestCase))
-		return
-	}
-
-	if len(test.Results) == 1 {
-		result := test.Results[0]
-		fmt.Printf("%v %v ⇒ %v\n", statusToColoredSymbol(result.Status),
-			fmtTestCase(test.TestCase), result.Output)
-		return
-	}
-
-	bs := test.SummarizeStatus()
-
-	fmt.Printf("%v %v (%v/%v passed, %v/%v skipped)\n",
-		statusToColoredSymbol(bs.Status), fmtTestCase(test.TestCase),
-		bs.Passed, bs.Total-bs.Skipped, bs.Skipped, bs.Total)
-
-	for idx, result := range test.Results {
-		prefix := "├"
-		if idx == bs.Total-1 {
-			prefix = "└"
+func fmtTestCase(test plan.TestCase) string {
+	var argsList []string
+	var behavior string
+	for k, v := range test.Arguments {
+		if k == "behavior" {
+			behavior = v
+			continue
 		}
-		fmt.Printf("   %v %v ⇒ %v\n", prefix,
-			statusToColoredSymbol(result.Status), result.Output)
+		if k == "client" {
+			continue
+		}
+		argsList = append(argsList, fmt.Sprintf("%v=%v", k, v))
 	}
-}
-
-func (list *List) End() error {
-	fmt.Printf("")
-	return nil
+	sort.Strings(argsList)
+	return fmt.Sprintf("[%v] %v→ (%v)", behavior, test.Client,
+		strings.Join(argsList, " "))
 }

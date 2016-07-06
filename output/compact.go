@@ -27,43 +27,78 @@ import (
 	"github.com/crossdock/crossdock/plan"
 )
 
-// List is a simple Reporter that prints the test output to stdout.
-type List struct{}
+// Compact is a simple Reporter that prints the test output to stdout with lots of dots (".').
+type Compact struct {
+	dotted bool
+}
 
-func (list *List) Start(plan *plan.Plan) error {
+func (compact *Compact) printf(format string, a ...interface{}) (n int, err error) {
+	if compact.dotted {
+		compact.dotted = false
+		fmt.Println()
+	}
+	return fmt.Printf(format, a...)
+}
+
+func (compact *Compact) printDot(status execute.Status) {
+	compact.dotted = true
+	var dot string
+	switch status {
+	case execute.Skipped:
+		dot = grey("S")
+	default:
+		dot = "."
+	}
+	fmt.Printf(dot)
+}
+
+func (compact *Compact) Start(plan *plan.Plan) error {
 	return nil
 }
 
-func (list *List) Next(test execute.TestResponse) {
+func (compact *Compact) Next(test execute.TestResponse) {
 	if len(test.Results) == 0 {
-		fmt.Printf("%v %v ⇒ (no results)\n", blue("∅"), fmtTestCase(test.TestCase))
+		compact.printf("%v %v ⇒ (no results)\n", blue("∅"), fmtTestCase(test.TestCase))
 		return
 	}
 
 	if len(test.Results) == 1 {
 		result := test.Results[0]
-		fmt.Printf("%v %v ⇒ %v\n", statusToColoredSymbol(result.Status),
-			fmtTestCase(test.TestCase), result.Output)
+		if result.Status != execute.Failed {
+			compact.printDot(result.Status)
+		} else {
+			compact.printf("%v %v ⇒ %v\n", statusToColoredSymbol(result.Status),
+				fmtTestCase(test.TestCase), result.Output)
+		}
 		return
 	}
 
 	bs := test.SummarizeStatus()
+
+	if bs.Status != execute.Failed {
+		compact.printDot(bs.Status)
+		return
+	}
 
 	fmt.Printf("%v %v (%v/%v passed, %v/%v skipped)\n",
 		statusToColoredSymbol(bs.Status), fmtTestCase(test.TestCase),
 		bs.Passed, bs.Total-bs.Skipped, bs.Skipped, bs.Total)
 
 	for idx, result := range test.Results {
+		if result.Status != execute.Failed {
+			compact.printDot(result.Status)
+			continue
+		}
 		prefix := "├"
 		if idx == bs.Total-1 {
 			prefix = "└"
 		}
-		fmt.Printf("   %v %v ⇒ %v\n", prefix,
+		compact.printf("   %v %v ⇒ %v\n", prefix,
 			statusToColoredSymbol(result.Status), result.Output)
 	}
 }
 
-func (list *List) End() error {
-	fmt.Printf("")
+func (compact *Compact) End() error {
+	compact.printf("")
 	return nil
 }
