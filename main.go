@@ -45,7 +45,7 @@ func main() {
 
 	plan := plan.New(config)
 
-	if err = reporter.Start(plan); err != nil {
+	if err := reporter.Start(plan); err != nil {
 		log.Fatal(err)
 	}
 
