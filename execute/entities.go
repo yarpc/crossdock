@@ -33,7 +33,8 @@ type TestResponse struct {
 	Results  []Result
 }
 
-// StatusSummary contains the a status report of the TestReponse, see SummarizeStatus.
+// StatusSummary contains the status report of a TestReponse, see
+// SummarizeStatus.
 type StatusSummary struct {
 	Status  Status
 	Total   int
