@@ -33,6 +33,48 @@ type TestResponse struct {
 	Results  []Result
 }
 
+// StatusSummary contains the status report of a TestReponse, see
+// SummarizeStatus.
+type StatusSummary struct {
+	Status  Status
+	Total   int
+	Skipped int
+	Passed  int
+	Failed  int
+}
+
+// SummarizeStatus returns a summary of the TestResponse, compiling it from all
+// the Results pertaining to it.
+func (test *TestResponse) SummarizeStatus() StatusSummary {
+	total := len(test.Results)
+	passed := 0
+	skipped := 0
+	for _, result := range test.Results {
+		switch result.Status {
+		case Success:
+			passed++
+		case Skipped:
+			skipped++
+		}
+	}
+	failed := total - passed - skipped
+
+	behaviorStatus := Failed
+	if skipped == total {
+		behaviorStatus = Skipped
+	} else if failed == 0 {
+		behaviorStatus = Success
+	}
+
+	return StatusSummary{
+		Status:  behaviorStatus,
+		Total:   total,
+		Skipped: skipped,
+		Passed:  passed,
+		Failed:  failed,
+	}
+}
+
 // Result is the outcome of an individual test case ran by the test client
 type Result struct {
 	Status Status

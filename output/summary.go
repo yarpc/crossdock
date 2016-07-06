@@ -23,6 +23,9 @@ package output
 import (
 	"errors"
 	"fmt"
+	"os"
+	"strings"
+	"text/tabwriter"
 
 	"github.com/crossdock/crossdock/execute"
 	"github.com/crossdock/crossdock/plan"
@@ -38,6 +41,27 @@ type Summary struct {
 }
 
 func (s *Summary) Start(plan *plan.Plan) error {
+	config := plan.Config
+
+	w := tabwriter.NewWriter(os.Stdout, 0, 8, 0, ' ', tabwriter.AlignRight)
+	defer w.Flush()
+
+	fmt.Fprintf(w, "Configuration:\n")
+
+	fmt.Fprintf(w, " - %v axes:\n", len(config.Axes))
+	for _, axis := range config.Axes {
+		fmt.Fprintf(w, "  %v\t: %v\n", axis.Name, strings.Join(axis.Values, ", "))
+	}
+
+	fmt.Fprintf(w, " - %v behavior(s):\n", len(config.Behaviors))
+	for _, b := range config.Behaviors {
+		fmt.Fprintf(w, "  %v\t: %v · %v\n", b.Name, b.ClientAxis,
+			strings.Join(b.ParamsAxes, " · "))
+	}
+
+	fmt.Fprintf(w, " - output: %v\n", strings.Join(config.Reports, ", "))
+
+	fmt.Fprintf(w, "\nTest plan: %v test(s)\n", len(plan.TestCases))
 	return nil
 }
 
@@ -57,16 +81,11 @@ func (s *Summary) Next(test execute.TestResponse) {
 
 func (s *Summary) End() error {
 	fmt.Println("")
+	total := s.NumSuccess + s.NumFail + s.NumSkipped
 	if s.NumSuccess > 0 {
-		fmt.Printf("%v passed\n", s.NumSuccess)
+		fmt.Printf("%v/%v passed (%v/%v skipped)\n",
+			s.NumSuccess, total-s.NumSkipped, s.NumSkipped, total)
 	}
-	if s.NumFail > 0 {
-		fmt.Printf("%v failed\n", s.NumFail)
-	}
-	if s.NumSkipped > 0 {
-		fmt.Printf("%v skipped\n", s.NumSkipped)
-	}
-
 	if s.Failed {
 		fmt.Printf("\nTests did not pass!\n\n")
 		return errors.New("At least one test failed")
