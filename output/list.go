@@ -32,9 +32,9 @@ import (
 )
 
 var green = color.New(color.FgGreen).SprintFunc()
-var yellow = color.New(color.FgYellow).SprintFunc()
 var red = color.New(color.FgRed).SprintFunc()
 var blue = color.New(color.FgBlue).SprintFunc()
+var grey = color.New(color.FgBlack, color.Bold).SprintFunc()
 
 // List is the output reporter as a list, with compact option.
 type List struct {
@@ -55,7 +55,7 @@ func (list *List) printDot(status execute.Status) {
 	var dot string
 	switch status {
 	case execute.Skipped:
-		dot = yellow(".")
+		dot = grey("S")
 	default:
 		dot = "."
 	}
@@ -71,7 +71,7 @@ func statusToColoredSymbol(status execute.Status) string {
 	case execute.Success:
 		return green("✓")
 	case execute.Skipped:
-		return yellow("⏩")
+		return grey("S")
 	default:
 		return red("✗")
 	}
