@@ -36,7 +36,7 @@ var red = color.New(color.FgRed).SprintFunc()
 var blue = color.New(color.FgBlue).SprintFunc()
 var grey = color.New(color.FgBlack, color.Bold).SprintFunc()
 
-// List is the output reporter as a list, with compact option.
+// List is a simple Reporter that prints the test output to stdout.
 type List struct {
 	Compact bool
 	dotted  bool

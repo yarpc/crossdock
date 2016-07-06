@@ -32,7 +32,6 @@ func main() {
 
 		// when method is HEAD, report back with a 200 when ready to run tests
 		if r.Method == "HEAD" {
-			w.Header().Add("Content-Length", "0")
 			return
 		}
 
