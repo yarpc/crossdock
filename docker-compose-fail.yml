@@ -1,39 +1,65 @@
 crossdock:
-    dns_search: .
     build: .
+    dns_search: .
     links:
-        - alpha
-        - omega
+        - pass
+        - fail1
+        - fail2
+        - fail3
+        - fail4
     environment:
-      - WAIT_FOR=alpha,omega
+      - WAIT_FOR=pass,fail1,fail2,fail3,fail4
 
-      - AXIS_CLIENT=alpha,omega
-      - AXIS_SERVER=alpha,omega
+      - AXIS_CLIENT=pass
+      - AXIS_SERVER=pass
       - AXIS_TRANSPORT=http,tchannel
 
       - BEHAVIOR_DANCE=client,server,transport
       - BEHAVIOR_SING=client,server,transport
 
-      - REPORT=list,json
-      - JSON_REPORT_PATH=/crossdock/report.json
+      - REPORT=list
 
-    volumes:
-      - .crossdock:/crossdock
-
-alpha:
-    dns_search: .
+pass:
     image: breerly/hello-server
+    dns_search: .
     ports:
         - 8080
     environment:
         - HELLO_PORT=8080
         - HELLO_MESSAGE=[{"status":"passed","output":"sup"}]
 
-omega:
-    dns_search: .
+fail1:
     image: breerly/hello-server
+    dns_search: .
     ports:
         - 8080
     environment:
         - HELLO_PORT=8080
-        - HELLO_MESSAGE=[] # no results returned by client
+        - HELLO_MESSAGE="}}!!!invalid json:"
+
+fail2:
+    image: breerly/hello-server
+    dns_search: .
+    ports:
+        - 8080
+    environment:
+        - HELLO_PORT=8080
+        - HELLO_MESSAGE=[{"wrong":"json"}]
+
+fail3:
+    image: breerly/hello-server
+    dns_search: .
+    ports:
+        - 8080
+    environment:
+        - HELLO_PORT=8080
+        - HELLO_MESSAGE=[] # 200, correct json, but no results
+
+fail4:
+    image: breerly/hello-server
+    dns_search: .
+    ports:
+        - 8080
+    environment:
+        - HELLO_PORT=8080
+        - HELLO_MESSAGE=[{"status":"failed","output":"explicit failure"}]
