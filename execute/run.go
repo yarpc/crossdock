@@ -68,6 +68,16 @@ func executeTestCase(testCase plan.TestCase) TestResponse {
 		}
 	}
 
+	if len(subResponses) == 0 {
+		return TestResponse{
+			TestCase: testCase,
+			Results: []Result{{
+				Status: Failed,
+				Output: "client returned 0 results",
+			}},
+		}
+	}
+
 	return TestResponse{
 		TestCase: testCase,
 		Results:  toResults(subResponses),
