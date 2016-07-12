@@ -30,11 +30,13 @@ function run {
     if [ $? -eq 0 ]; then
         failmsg="Expected non-0 exit code for '$2'"
         sep="-------------------------------------------------------------------"
+        echo ""
         echo "$failmsg:"
         echo "$sep"
         echo "$out"
         echo "$sep"
         echo "^^^ $failmsg"
+        echo ""
         exit 1
     fi
 }
