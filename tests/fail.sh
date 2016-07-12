@@ -34,7 +34,7 @@ function run {
         echo "$sep"
         echo "$out"
         echo "$sep"
-        echo "^^^ %failmsg"
+        echo "^^^ $failmsg"
         exit 1
     fi
 }
