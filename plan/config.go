@@ -24,14 +24,13 @@ import (
 	"errors"
 	"os"
 	"sort"
-	"strconv"
 	"strings"
 	"time"
 )
 
 const (
-	defaultCallTimeoutInSeconds = 5
-	defaultHostTimeoutInSeconds = 30
+	defaultCallTimeout = 5*time.Second
+	defaultHostTimeout = 30*time.Second
 )
 
 // ReadConfigFromEnviron creates a Config by looking for environment variables
@@ -46,13 +45,13 @@ func ReadConfigFromEnviron() (*Config, error) {
 		jsonReportPathKey = "JSON_REPORT_PATH"
 	)
 
-	callTimeout, _ := strconv.Atoi(os.Getenv(callTimeoutKey))
+	callTimeout, _ := time.ParseDuration(os.Getenv(callTimeoutKey))
 	if callTimeout == 0 {
-		callTimeout = defaultCallTimeoutInSeconds
+		callTimeout = defaultCallTimeout
 	}
-	hostTimeout, _ := strconv.Atoi(os.Getenv(hostTimeoutKey))
+	hostTimeout, _ := time.ParseDuration(os.Getenv(hostTimeoutKey))
 	if hostTimeout == 0 {
-		hostTimeout = defaultHostTimeoutInSeconds
+		hostTimeout = defaultHostTimeout
 	}
 
 	waitForHosts := trimCollection(strings.Split(os.Getenv(waitKey), ","))
@@ -76,8 +75,8 @@ func ReadConfigFromEnviron() (*Config, error) {
 
 	config := &Config{
 		Reports:        reports,
-		CallTimeout:    callTimeout*time.Second,
-		HostTimeout:    hostTimeout*time.Second,
+		CallTimeout:    callTimeout,
+		HostTimeout:    hostTimeout,
 		WaitForHosts:   waitForHosts,
 		Axes:           axes,
 		Behaviors:      behaviors,

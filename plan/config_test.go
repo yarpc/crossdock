@@ -34,8 +34,8 @@ func TestReadConfigFromEnviron(t *testing.T) {
 	os.Setenv("AXIS_SERVER", "yarpc-go,yarpc-node")
 	os.Setenv("AXIS_TRANSPORT", "http,tchannel")
 	os.Setenv("BEHAVIOR_ECHO", "client,server,transport")
-	os.Setenv("CALL_TIMEOUT", "10")
-	os.Setenv("HOST_TIMEOUT", "20")
+	os.Setenv("CALL_TIMEOUT", "10s")
+	os.Setenv("HOST_TIMEOUT", "20s")
 	defer os.Clearenv()
 
 	config, err := ReadConfigFromEnviron()
