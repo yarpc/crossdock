@@ -30,8 +30,8 @@ import (
 )
 
 const (
-	defaultCallTimeout = 5
-	defaultHostTimeout = 30
+	defaultCallTimeoutInSeconds = 5
+	defaultHostTimeoutInSeconds = 30
 )
 
 // ReadConfigFromEnviron creates a Config by looking for environment variables
@@ -48,11 +48,11 @@ func ReadConfigFromEnviron() (*Config, error) {
 
 	callTimeout, _ := strconv.Atoi(os.Getenv(callTimeoutKey))
 	if callTimeout == 0 {
-		callTimeout = defaultCallTimeout
+		callTimeout = defaultCallTimeoutInSeconds
 	}
 	hostTimeout, _ := strconv.Atoi(os.Getenv(hostTimeoutKey))
 	if hostTimeout == 0 {
-		hostTimeout = defaultHostTimeout
+		hostTimeout = defaultHostTimeoutInSeconds
 	}
 
 	waitForHosts := trimCollection(strings.Split(os.Getenv(waitKey), ","))
