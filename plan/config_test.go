@@ -35,7 +35,7 @@ func TestReadConfigFromEnviron(t *testing.T) {
 	os.Setenv("AXIS_TRANSPORT", "http,tchannel")
 	os.Setenv("BEHAVIOR_ECHO", "client,server,transport")
 	os.Setenv("CALL_TIMEOUT", "10s")
-	os.Setenv("HOST_TIMEOUT", "20s")
+	os.Setenv("WAIT_FOR_TIMEOUT", "20s")
 	defer os.Clearenv()
 
 	config, err := ReadConfigFromEnviron()
@@ -68,7 +68,7 @@ func TestReadConfigFromEnviron(t *testing.T) {
 
 	assert.Equal(t, 10*time.Second, config.CallTimeout)
 
-	assert.Equal(t, 20*time.Second, config.HostTimeout)
+	assert.Equal(t, 20*time.Second, config.WaitForTimeout)
 }
 
 func TestReadConfigFromEnvironTrimsWhitespace(t *testing.T) {

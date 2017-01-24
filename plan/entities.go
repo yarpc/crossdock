@@ -26,7 +26,7 @@ import "time"
 type Config struct {
 	Reports        []string
 	CallTimeout    time.Duration
-	HostTimeout    time.Duration
+	WaitForTimeout time.Duration
 	WaitForHosts   []string
 	Axes           Axes
 	Behaviors      Behaviors

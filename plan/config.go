@@ -30,7 +30,7 @@ import (
 
 const (
 	defaultCallTimeout = 5*time.Second
-	defaultHostTimeout = 30*time.Second
+	defaultWaitForTimeout = 30*time.Second
 )
 
 // ReadConfigFromEnviron creates a Config by looking for environment variables
@@ -38,7 +38,7 @@ func ReadConfigFromEnviron() (*Config, error) {
 	const (
 		reportKey         = "REPORT"
 		callTimeoutKey    = "CALL_TIMEOUT"
-		hostTimeoutKey    = "HOST_TIMEOUT"
+		waitForTimeoutKey = "WAIT_FOR_TIMEOUT"
 		waitKey           = "WAIT_FOR"
 		axisKeyPrefix     = "AXIS_"
 		behaviorKeyPrefix = "BEHAVIOR_"
@@ -49,9 +49,9 @@ func ReadConfigFromEnviron() (*Config, error) {
 	if callTimeout == 0 {
 		callTimeout = defaultCallTimeout
 	}
-	hostTimeout, _ := time.ParseDuration(os.Getenv(hostTimeoutKey))
-	if hostTimeout == 0 {
-		hostTimeout = defaultHostTimeout
+	waitForTimeout, _ := time.ParseDuration(os.Getenv(waitForTimeoutKey))
+	if waitForTimeout == 0 {
+		waitForTimeout = defaultWaitForTimeout
 	}
 
 	waitForHosts := trimCollection(strings.Split(os.Getenv(waitKey), ","))
@@ -76,7 +76,7 @@ func ReadConfigFromEnviron() (*Config, error) {
 	config := &Config{
 		Reports:        reports,
 		CallTimeout:    callTimeout,
-		HostTimeout:    hostTimeout,
+		WaitForTimeout: waitForTimeout,
 		WaitForHosts:   waitForHosts,
 		Axes:           axes,
 		Behaviors:      behaviors,
