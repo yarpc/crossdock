@@ -23,6 +23,7 @@ package plan
 import (
 	"os"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -33,6 +34,8 @@ func TestReadConfigFromEnviron(t *testing.T) {
 	os.Setenv("AXIS_SERVER", "yarpc-go,yarpc-node")
 	os.Setenv("AXIS_TRANSPORT", "http,tchannel")
 	os.Setenv("BEHAVIOR_ECHO", "client,server,transport")
+	os.Setenv("CALL_TIMEOUT", "10")
+	os.Setenv("HOST_TIMEOUT", "20")
 	defer os.Clearenv()
 
 	config, err := ReadConfigFromEnviron()
@@ -62,6 +65,10 @@ func TestReadConfigFromEnviron(t *testing.T) {
 			ClientAxis: "client",
 			ParamsAxes: []string{"server", "transport"},
 		}})
+
+	assert.Equal(t, 10*time.Second, config.CallTimeout)
+
+	assert.Equal(t, 20*time.Second, config.HostTimeout)
 }
 
 func TestReadConfigFromEnvironTrimsWhitespace(t *testing.T) {

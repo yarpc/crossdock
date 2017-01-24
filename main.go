@@ -23,7 +23,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"time"
 
 	"github.com/crossdock/crossdock/execute"
 	"github.com/crossdock/crossdock/output"
@@ -50,7 +49,7 @@ func main() {
 	}
 
 	fmt.Printf("\nWaiting on WAIT_FOR=%v\n\n", plan.Config.WaitForHosts)
-	execute.Wait(plan.Config.WaitForHosts, time.Duration(30)*time.Second)
+	execute.Wait(plan.Config.WaitForHosts, plan.Config.HostTimeout)
 
 	fmt.Printf("\nExecuting Matrix...\n\n")
 	results := execute.Run(plan)

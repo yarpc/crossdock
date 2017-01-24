@@ -25,7 +25,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/url"
-	"time"
 
 	"github.com/crossdock/crossdock/plan"
 
@@ -97,7 +96,7 @@ func makeRequest(testCase plan.TestCase) ([]byte, error) {
 	callURL.RawQuery = args.Encode()
 
 	ctx, _ := context.WithTimeout(
-		context.Background(), testCase.Plan.Config.CallTimeout*time.Second)
+		context.Background(), testCase.Plan.Config.CallTimeout)
 	resp, err := ctxhttp.Get(ctx, nil, callURL.String())
 	if err != nil {
 		return []byte(""), err
