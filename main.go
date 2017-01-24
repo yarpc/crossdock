@@ -49,7 +49,7 @@ func main() {
 	}
 
 	fmt.Printf("\nWaiting on WAIT_FOR=%v\n\n", plan.Config.WaitForHosts)
-	execute.Wait(plan.Config.WaitForHosts, plan.Config.HostTimeout)
+	execute.Wait(plan.Config.WaitForHosts, plan.Config.WaitForTimeout)
 
 	fmt.Printf("\nExecuting Matrix...\n\n")
 	results := execute.Run(plan)
