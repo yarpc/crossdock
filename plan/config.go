@@ -29,8 +29,8 @@ import (
 )
 
 const (
-	defaultCallTimeout = 5*time.Second
-	defaultWaitForTimeout = 30*time.Second
+	defaultCallTimeout    = 5 * time.Second
+	defaultWaitForTimeout = 30 * time.Second
 )
 
 // ReadConfigFromEnviron creates a Config by looking for environment variables
@@ -92,14 +92,17 @@ func ReadConfigFromEnviron() (*Config, error) {
 func parseBehavior(d string) Behavior {
 	pair := strings.SplitN(d, "=", 2)
 	key := strings.ToLower(pair[0])
+
 	values := strings.Split(pair[1], ",")
 	values = trimCollection(values)
+	clientAxis := values[0]
+	values = values[1:]
 	sort.Strings(values)
 
 	behavior := Behavior{
 		Name:       key,
-		ClientAxis: values[0],
-		ParamsAxes: values[1:],
+		ClientAxis: clientAxis,
+		ParamsAxes: values,
 	}
 
 	return behavior

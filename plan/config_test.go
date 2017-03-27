@@ -80,3 +80,39 @@ func TestReadConfigFromEnvironTrimsWhitespace(t *testing.T) {
 
 	assert.Equal(t, config.WaitForHosts, []string{"alpha", "omega"})
 }
+
+func TestParseBehavior(t *testing.T) {
+	tests := []struct {
+		give string
+		want Behavior
+	}{
+		{
+			give: "foo=client,server",
+			want: Behavior{
+				Name:       "foo",
+				ClientAxis: "client",
+				ParamsAxes: []string{"server"},
+			},
+		},
+		{
+			give: "x=a,b,c,d",
+			want: Behavior{
+				Name:       "x",
+				ClientAxis: "a",
+				ParamsAxes: []string{"b", "c", "d"},
+			},
+		},
+		{
+			give: "y=c,b,a",
+			want: Behavior{
+				Name:       "y",
+				ClientAxis: "c",
+				ParamsAxes: []string{"a", "b"},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		assert.Equal(t, tt.want, parseBehavior(tt.give))
+	}
+}
