@@ -24,13 +24,15 @@ import "time"
 
 // Config describes the unstructured test plan
 type Config struct {
-	Reports        []string
-	CallTimeout    time.Duration
-	WaitForTimeout time.Duration
-	WaitForHosts   []string
-	Axes           Axes
-	Behaviors      Behaviors
-	JSONReportPath string
+	Reports              []string
+	CallTimeout          time.Duration
+	WaitForTimeout       time.Duration
+	WaitForHosts         []string
+	Axes                 Axes
+	Behaviors            Behaviors
+	JSONReportPath       string
+	HorizontalScaleShard  int
+	HorizontalScaleCount int
 }
 
 // Axes is a collection of Axis objects sortable by axis name.

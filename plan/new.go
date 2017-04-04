@@ -56,7 +56,51 @@ func buildTestCases(plan *Plan) []TestCase {
 			testCases = append(testCases, t)
 		}
 	}
-	return testCases
+	return pruneTestCases(plan.Config.HorizontalScaleCount, plan.Config.HorizontalScaleCount, testCases)
+}
+
+func pruneTestCases(horizontalScaleShard int, horizontalScaleCount int, testCases []TestCase) []TestCase {
+	if horizontalScaleShard == 0 || horizontalScaleCount == 0 {
+		return testCases
+	}
+	indices := getHorizontalScaleIndices(horizontalScaleShard, horizontalScaleCount, len(testCases))
+	var prunedTestCases []TestCase
+	for _, index := range indices {
+		prunedTestCases = append(prunedTestCases, testCases[index])
+	}
+	return prunedTestCases
+}
+
+// allocates in a round-robin scheme as this is the easiest to reason about
+//
+// 1,3,1 -> [(1),nil,nil]
+// 1,3,2 -> [(1),(2),nil]
+// 1,3,3 -> [(1),(2),(3)]
+// 1,3,4 -> [(1,4),(2),(3)]
+// 1,3,5 -> [(1,4),(2,5),(3)]
+//
+// we might want a more ordered scheme to have similar tests nearer each other?
+// does test index actually affect similarity?
+// example of this:
+//
+// 1,3,1 -> [(1),nil,nil]
+// 1,3,2 -> [(1),(2),nil]
+// 1,3,3 -> [(1),(2),(3)]
+// 1,3,4 -> [(1,2),(3),(4)]
+// 1,3,5 -> [(1,2),(3,4),(5)]
+//
+// I'm sure there's a better way to do this mathematically
+func getHorizontalScaleIndices(horizontalScaleShard int, horizontalScaleCount int, count int) []int {
+	if horizontalScaleShard == horizontalScaleCount {
+		horizontalScaleShard = 0
+	}
+	var indices []int
+	for i := 1; i <= count; i++ {
+		if i%horizontalScaleCount == horizontalScaleShard {
+			indices = append(indices, i-1)
+		}
+	}
+	return indices
 }
 
 // combinations takes multiple lists of strings and return multiple lists of
