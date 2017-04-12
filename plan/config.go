@@ -22,7 +22,6 @@ package plan
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"sort"
 	"strings"
@@ -76,7 +75,7 @@ func ReadConfigFromEnviron() (*Config, error) {
 	}
 	sort.Sort(axes)
 	sort.Sort(behaviors)
-	behaviors, err := validateAndApplyFilters(filterMap, behaviors)
+	err := behaviors.validateAndApplyFilters(filterMap)
 	if err != nil {
 		return nil, err
 	}
@@ -117,49 +116,24 @@ func parseBehavior(d string) Behavior {
 	return behavior
 }
 
-func validateAndApplyFilters(filterMap map[string][]Filter, behaviors Behaviors) (Behaviors, error) {
-	for i := range behaviors {
-		behavior := &behaviors[i]
-		filters := filterMap[behavior.Name]
-		for _, filter := range filters {
-			for match := range filter.AxisMatches {
-				if match != behavior.ClientAxis && !axisContainsRule(match, behavior.ParamsAxes) {
-					return nil, fmt.Errorf("%v is not defined in axis for %v", match, behavior.Name)
-				}
-			}
-		}
-		behavior.SkipFilters = filters
-	}
-	return behaviors, nil
-}
-
-func axisContainsRule(item string, axis []string) bool {
-	for _, axes := range axis {
-		if axes == item {
-			return true
-		}
-	}
-	return false
-}
-
 func parseSkipBehavior(d string) (string, []Filter) {
 	pair := strings.SplitN(d, "=", 2)
 	key := strings.ToLower(pair[0])
-	filters := strings.Split(pair[1], ",")
-	filters = trimCollection(filters)
-	var filterList []Filter
-	for _, filter := range filters {
-		values := strings.Split(filter, "+")
-		filterItem := Filter{
+	rawFilters := strings.Split(pair[1], ",")
+	var filters []Filter
+	for _, rawFilter := range rawFilters {
+		strMatches := strings.Split(rawFilter, "+")
+		filter := Filter{
 			AxisMatches: map[string]string{},
 		}
-		for _, value := range values {
-			tuple := strings.Split(value, "=")
-			filterItem.AxisMatches[tuple[0]] = tuple[1]
+		for _, strMatch := range strMatches {
+			tuple := strings.Split(strMatch, "=")
+			tuple = trimCollection(tuple)
+			filter.AxisMatches[tuple[0]] = tuple[1]
 		}
-		filterList = append(filterList, filterItem)
+		filters = append(filters, filter)
 	}
-	return key, filterList
+	return key, filters
 }
 
 func parseAxis(d string) Axis {

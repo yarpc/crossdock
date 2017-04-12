@@ -50,8 +50,7 @@ func executeTestCase(testCase plan.TestCase) TestResponse {
 			TestCase: testCase,
 			Results: []Result{{
 				Status: Skipped,
-				// TODO: beefup this error message further?
-				Output: fmt.Sprintf("Skipped due to the filter"),
+				Output: fmt.Sprintf("Test filtered out"),
 			}},
 		}
 	}

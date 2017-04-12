@@ -20,7 +20,10 @@
 
 package plan
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 // Config describes the unstructured test plan
 type Config struct {
@@ -68,12 +71,41 @@ type Behavior struct {
 	SkipFilters []Filter
 }
 
+// HasAxis checks and returns true if passes axis is part of behavior, false otherwise.
+func (b Behavior) HasAxis(axis string) bool {
+	return axis == b.ClientAxis || axesContainsAxis(axis, b.ParamsAxes)
+}
+
+func axesContainsAxis(axisToFind string, axes []string) bool {
+	for _, axis := range axes {
+		if axis == axisToFind {
+			return true
+		}
+	}
+	return false
+}
+
 // Behaviors is a collection of Behavior objects sortable by behavior name.
 type Behaviors []Behavior
 
 func (b Behaviors) Len() int           { return len(b) }
 func (b Behaviors) Swap(i, j int)      { b[i], b[j] = b[j], b[i] }
 func (b Behaviors) Less(i, j int) bool { return b[i].Name < b[j].Name }
+func (b Behaviors) validateAndApplyFilters(filterByBehavior map[string][]Filter) error {
+	for i := range b {
+		behavior := &b[i]
+		filters := filterByBehavior[behavior.Name]
+		for _, filter := range filters {
+			for axisToMatch := range filter.AxisMatches {
+				if !behavior.HasAxis(axisToMatch) {
+					return fmt.Errorf("%v is not defined in axis for %v", axisToMatch, behavior.Name)
+				}
+			}
+		}
+		behavior.SkipFilters = filters
+	}
+	return nil
+}
 
 // Plan describes the entirety of the test program
 type Plan struct {
@@ -84,10 +116,11 @@ type Plan struct {
 
 // TestCase represents the request made to test clients.
 type TestCase struct {
-	Plan      *Plan
-	Client    string
-	Arguments TestClientArgs
-	Skip      bool
+	Plan       *Plan
+	Client     string
+	Arguments  TestClientArgs
+	Skip       bool
+	SkipReason string
 }
 
 // TestClientArgs represents custom args to pass to test client.

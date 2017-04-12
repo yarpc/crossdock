@@ -57,15 +57,17 @@ func buildTestCases(plan *Plan) []TestCase {
 
 			for _, filter := range behavior.SkipFilters {
 				// Each filter should be a complete match
-				isCompleteMatch := true
+				matchCnt := 0
 				for key, value := range filter.AxisMatches {
-					if (key == behavior.ClientAxis && value != client) ||
-						testArgs[key] != value {
-						isCompleteMatch = false
+					if (key == behavior.ClientAxis && value == client) ||
+						testArgs[key] == value {
+						matchCnt++
 					}
 				}
-				if isCompleteMatch {
+				if matchCnt == len(filter.AxisMatches) {
 					t.Skip = true
+					t.SkipReason = "Filtered out in pruning"
+					break
 				}
 			}
 
