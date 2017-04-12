@@ -187,7 +187,6 @@ func validateConfig(config *Config) error {
 			if _, ok := axes[param]; !ok {
 				return errors.New("Can't find AXIS environment for: " + param)
 			}
-			//add validation for the filter
 		}
 	}
 	return nil
