@@ -4,7 +4,6 @@ import:
 - package: github.com/stretchr/testify
   subpackages:
   - assert
-- package: github.com/orchestrate-io/dvr
 - package: golang.org/x/net
   subpackages:
   - context

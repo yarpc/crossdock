@@ -1,19 +1,36 @@
-hash: e71d26850e3330d56ee3e2d9938eace145c780305e761b47abc640608d2214ff
-updated: 2016-04-12T12:35:09.86721773-07:00
+hash: c35bfe6b4ae2c6715640b262e733def42878cc8244390760c773fd7b0f0e415f
+updated: 2017-04-12T15:17:08.985198632-07:00
 imports:
 - name: github.com/fatih/color
   version: 533cd7fd8a85905f67a1753afb4deddc85ea174f
+- name: github.com/mattn/go-colorable
+  version: 9cbef7c35391cca05f15f8181dc0b18bc9736dbb
+  repo: https://github.com/mattn/go-colorable
+- name: github.com/mattn/go-isatty
+  version: 56b76bdf51f7708750eac80fa38b952bb9f32639
+  repo: https://github.com/mattn/go-isatty
 - name: github.com/olekukonko/tablewriter
   version: cca8bbc0798408af109aaaa239cbd2634846b340
-- name: github.com/orchestrate-io/dvr
-  version: adafdc8de746d2a490c15a8ab8704c6110a0dcd6
 - name: github.com/stretchr/testify
   version: 9f9027faeb0dad515336ed2f28317f9f8f527ab4
   subpackages:
   - assert
+  - require
 - name: golang.org/x/net
   version: 35b06af0720201bc2f326773a80767387544f8c4
   subpackages:
   - context
   - context/ctxhttp
-devImports: []
+- name: golang.org/x/sys
+  version: 99f16d856c9836c42d24e7ab64ea72916925fa97
+  subpackages:
+  - unix
+testImports:
+- name: github.com/davecgh/go-spew
+  version: 346938d642f2ec3594ed81d874461961cd0faa76
+  subpackages:
+  - spew
+- name: github.com/pmezard/go-difflib
+  version: 792786c7400a136282c1664665ae0a8db921c6c2
+  subpackages:
+  - difflib
