@@ -45,6 +45,16 @@ func Run(plan *plan.Plan) <-chan TestResponse {
 }
 
 func executeTestCase(testCase plan.TestCase) TestResponse {
+	if testCase.Skip {
+		return TestResponse{
+			TestCase: testCase,
+			Results: []Result{{
+				Status: Skipped,
+				// TODO: beefup this error message further?
+				Output: fmt.Sprintf("Skipped due to the filter"),
+			}},
+		}
+	}
 	response, err := makeRequest(testCase)
 	if err != nil {
 		return TestResponse{

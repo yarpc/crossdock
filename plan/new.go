@@ -52,7 +52,23 @@ func buildTestCases(plan *Plan) []TestCase {
 				Plan:      plan,
 				Client:    client,
 				Arguments: testArgs,
+				Skip:      false,
 			}
+
+			for _, filter := range behavior.SkipFilters {
+				// Each filter should be a complete match
+				isCompleteMatch := true
+				for key, value := range filter.AxisMatches {
+					if (key == behavior.ClientAxis && value != client) ||
+						testArgs[key] != value {
+						isCompleteMatch = false
+					}
+				}
+				if isCompleteMatch {
+					t.Skip = true
+				}
+			}
+
 			testCases = append(testCases, t)
 		}
 	}

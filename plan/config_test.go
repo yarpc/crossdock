@@ -34,6 +34,7 @@ func TestReadConfigFromEnviron(t *testing.T) {
 	os.Setenv("AXIS_SERVER", "yarpc-go,yarpc-node")
 	os.Setenv("AXIS_TRANSPORT", "http,tchannel")
 	os.Setenv("BEHAVIOR_ECHO", "client,server,transport")
+	os.Setenv("BEHAVIOR_SKIP_ECHO", "client=yarpc-go+transport=tchannel")
 	os.Setenv("CALL_TIMEOUT", "10s")
 	os.Setenv("WAIT_FOR_TIMEOUT", "20s")
 	defer os.Clearenv()
@@ -55,16 +56,25 @@ func TestReadConfigFromEnviron(t *testing.T) {
 		"tchannel",
 	}}
 
-	assert.Equal(t, config.Reports, []string{"list"})
+	assert.Equal(t, []string{"list"}, config.Reports)
 
-	assert.Equal(t, config.Axes, Axes{client, server, transport})
+	assert.Equal(t, Axes{client, server, transport}, config.Axes)
 
-	assert.Equal(t, config.Behaviors, Behaviors{
+	assert.Equal(t, Behaviors{
 		{
 			Name:       "echo",
 			ClientAxis: "client",
 			ParamsAxes: []string{"server", "transport"},
-		}})
+			SkipFilters: []Filter{
+				Filter{
+					AxisMatches: map[string]string{
+						"client":    "yarpc-go",
+						"transport": "tchannel",
+					},
+				},
+			},
+		},
+	}, config.Behaviors)
 
 	assert.Equal(t, 10*time.Second, config.CallTimeout)
 
@@ -114,5 +124,48 @@ func TestParseBehavior(t *testing.T) {
 
 	for _, tt := range tests {
 		assert.Equal(t, tt.want, parseBehavior(tt.give))
+	}
+}
+
+func TestParseSkipBehavior(t *testing.T) {
+	tests := []struct {
+		give       string
+		wantFilter []Filter
+		wantKey    string
+	}{
+		{
+			give: "foo=client=c+server=b",
+			wantFilter: []Filter{
+				{
+					AxisMatches: map[string]string{
+						"client": "c",
+						"server": "b",
+					},
+				},
+			},
+			wantKey: "foo",
+		},
+		{
+			give: "x=a=b,c=d",
+			wantFilter: []Filter{
+				{
+					AxisMatches: map[string]string{
+						"a": "b",
+					},
+				},
+				{
+					AxisMatches: map[string]string{
+						"c": "d",
+					},
+				},
+			},
+			wantKey: "x",
+		},
+	}
+
+	for _, tt := range tests {
+		key, filter := parseSkipBehavior(tt.give)
+		assert.Equal(t, tt.wantFilter, filter)
+		assert.Equal(t, tt.wantKey, key)
 	}
 }

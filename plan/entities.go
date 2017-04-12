@@ -55,11 +55,17 @@ func (a Axes) Index() map[string]Axis {
 	return axes
 }
 
+// Filter is collection of axis to escape
+type Filter struct {
+	AxisMatches map[string]string
+}
+
 // Behavior represents the test behavior that will be triggered by crossdock
 type Behavior struct {
-	Name       string
-	ClientAxis string
-	ParamsAxes []string
+	Name        string
+	ClientAxis  string
+	ParamsAxes  []string
+	SkipFilters []Filter
 }
 
 // Behaviors is a collection of Behavior objects sortable by behavior name.
@@ -81,6 +87,7 @@ type TestCase struct {
 	Plan      *Plan
 	Client    string
 	Arguments TestClientArgs
+	Skip      bool
 }
 
 // TestClientArgs represents custom args to pass to test client.

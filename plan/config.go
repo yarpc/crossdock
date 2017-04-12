@@ -22,6 +22,7 @@ package plan
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"sort"
 	"strings"
@@ -36,13 +37,14 @@ const (
 // ReadConfigFromEnviron creates a Config by looking for environment variables
 func ReadConfigFromEnviron() (*Config, error) {
 	const (
-		reportKey         = "REPORT"
-		callTimeoutKey    = "CALL_TIMEOUT"
-		waitForTimeoutKey = "WAIT_FOR_TIMEOUT"
-		waitKey           = "WAIT_FOR"
-		axisKeyPrefix     = "AXIS_"
-		behaviorKeyPrefix = "BEHAVIOR_"
-		jsonReportPathKey = "JSON_REPORT_PATH"
+		reportKey             = "REPORT"
+		callTimeoutKey        = "CALL_TIMEOUT"
+		waitForTimeoutKey     = "WAIT_FOR_TIMEOUT"
+		waitKey               = "WAIT_FOR"
+		axisKeyPrefix         = "AXIS_"
+		behaviorKeyPrefix     = "BEHAVIOR_"
+		behaviorSkipKeyPrefix = "BEHAVIOR_SKIP_"
+		jsonReportPathKey     = "JSON_REPORT_PATH"
 	)
 
 	callTimeout, _ := time.ParseDuration(os.Getenv(callTimeoutKey))
@@ -59,10 +61,14 @@ func ReadConfigFromEnviron() (*Config, error) {
 
 	var axes Axes
 	var behaviors Behaviors
+	filterMap := make(map[string][]Filter)
 	for _, e := range os.Environ() {
 		if strings.HasPrefix(e, axisKeyPrefix) {
 			axis := parseAxis(strings.TrimPrefix(e, axisKeyPrefix))
 			axes = append(axes, axis)
+		} else if strings.HasPrefix(e, behaviorSkipKeyPrefix) {
+			key, filter := parseSkipBehavior(strings.TrimPrefix(e, behaviorSkipKeyPrefix))
+			filterMap[key] = filter
 		} else if strings.HasPrefix(e, behaviorKeyPrefix) {
 			behavior := parseBehavior(strings.TrimPrefix(e, behaviorKeyPrefix))
 			behaviors = append(behaviors, behavior)
@@ -70,6 +76,10 @@ func ReadConfigFromEnviron() (*Config, error) {
 	}
 	sort.Sort(axes)
 	sort.Sort(behaviors)
+	behaviors, err := validateAndApplyFilters(filterMap, behaviors)
+	if err != nil {
+		return nil, err
+	}
 
 	jsonReportPath := os.Getenv(jsonReportPathKey)
 
@@ -104,8 +114,52 @@ func parseBehavior(d string) Behavior {
 		ClientAxis: clientAxis,
 		ParamsAxes: values,
 	}
-
 	return behavior
+}
+
+func validateAndApplyFilters(filterMap map[string][]Filter, behaviors Behaviors) (Behaviors, error) {
+	for i := range behaviors {
+		behavior := &behaviors[i]
+		filters := filterMap[behavior.Name]
+		for _, filter := range filters {
+			for match := range filter.AxisMatches {
+				if match != behavior.ClientAxis && !axisContainsRule(match, behavior.ParamsAxes) {
+					return nil, fmt.Errorf("%v is not defined in axis for %v", match, behavior.Name)
+				}
+			}
+		}
+		behavior.SkipFilters = filters
+	}
+	return behaviors, nil
+}
+
+func axisContainsRule(item string, axis []string) bool {
+	for _, axes := range axis {
+		if axes == item {
+			return true
+		}
+	}
+	return false
+}
+
+func parseSkipBehavior(d string) (string, []Filter) {
+	pair := strings.SplitN(d, "=", 2)
+	key := strings.ToLower(pair[0])
+	filters := strings.Split(pair[1], ",")
+	filters = trimCollection(filters)
+	var filterList []Filter
+	for _, filter := range filters {
+		values := strings.Split(filter, "+")
+		filterItem := Filter{
+			AxisMatches: map[string]string{},
+		}
+		for _, value := range values {
+			tuple := strings.Split(value, "=")
+			filterItem.AxisMatches[tuple[0]] = tuple[1]
+		}
+		filterList = append(filterList, filterItem)
+	}
+	return key, filterList
 }
 
 func parseAxis(d string) Axis {
@@ -133,6 +187,7 @@ func validateConfig(config *Config) error {
 			if _, ok := axes[param]; !ok {
 				return errors.New("Can't find AXIS environment for: " + param)
 			}
+			//add validation for the filter
 		}
 	}
 	return nil
