@@ -58,9 +58,9 @@ func (a Axes) Index() map[string]Axis {
 	return axes
 }
 
-// Filter is collection of axis to escape the execution of behavior.
-// Each attribute in collection is key value pair which has the name of axis
-// and value of axis to escape.
+// Filter specifies criteria for skipping specific test cases of a behavior.
+// AxisMatches holds a mapping of behavior parameters to values.
+// All test cases for a behavior where all parameter values match the map will be skipped.
 type Filter struct {
 	AxisMatches map[string]string
 }
