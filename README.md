@@ -77,7 +77,7 @@ Skip clauses are comprised of zero or more filter expressions separated by comma
 ```
 SKIP_RUN=filter1,filter2,...,filterN
 ```
-Where each filter consists or zero or more axis matchers separated by ``` + ``` s. These are and-ed together.
+Where each filter consists or zero or more axis matchers separated by ` + ` s. These are and-ed together.
 ```
 axis1:value1+axis2:value2+...+axisN:valueN
 ```
