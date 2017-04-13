@@ -180,3 +180,89 @@ func TestNew(t *testing.T) {
 
 	assert.Equal(t, plan.TestCases, wanted)
 }
+
+func TestGetHorizontalScaleIndices(t *testing.T) {
+	tests := []struct {
+		horizontalScaleCount int
+		count                int
+		results              [][]int
+	}{
+		{
+			horizontalScaleCount: 3,
+			count:                1,
+			results: [][]int{
+				[]int{0},
+				nil,
+				nil,
+			},
+		},
+		{
+			horizontalScaleCount: 3,
+			count:                2,
+			results: [][]int{
+				[]int{0},
+				[]int{1},
+				nil,
+			},
+		},
+		{
+			horizontalScaleCount: 3,
+			count:                3,
+			results: [][]int{
+				[]int{0},
+				[]int{1},
+				[]int{2},
+			},
+		},
+		{
+			horizontalScaleCount: 3,
+			count:                4,
+			results: [][]int{
+				[]int{0, 3},
+				[]int{1},
+				[]int{2},
+			},
+		},
+		{
+			horizontalScaleCount: 3,
+			count:                5,
+			results: [][]int{
+				[]int{0, 3},
+				[]int{1, 4},
+				[]int{2},
+			},
+		},
+		{
+			horizontalScaleCount: 3,
+			count:                6,
+			results: [][]int{
+				[]int{0, 3},
+				[]int{1, 4},
+				[]int{2, 5},
+			},
+		},
+		{
+			horizontalScaleCount: 3,
+			count:                7,
+			results: [][]int{
+				[]int{0, 3, 6},
+				[]int{1, 4},
+				[]int{2, 5},
+			},
+		},
+		{
+			horizontalScaleCount: 3,
+			count:                8,
+			results: [][]int{
+				[]int{0, 3, 6},
+				[]int{1, 4, 7},
+				[]int{2, 5},
+			},
+		},
+	}
+	for _, tt := range tests {
+		for i := 0; i < tt.horizontalScaleCount; i++ {
+			assert.Equal(t, tt.results[i], getHorizontalScaleIndices(i+1, tt.horizontalScaleCount, tt.count))
+		}
+	}
+}

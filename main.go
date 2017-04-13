@@ -44,10 +44,12 @@ func main() {
 
 	plan := plan.New(config)
 
+	// TODO: There might be side effects on the reporter for not all TestCases being present
 	if err := reporter.Start(plan); err != nil {
 		log.Fatal(err)
 	}
 
+	// TODO: WaitForHosts might be different depending on horizontal scaling
 	fmt.Printf("\nWaiting on WAIT_FOR=%v\n\n", plan.Config.WaitForHosts)
 	execute.Wait(plan.Config.WaitForHosts, plan.Config.WaitForTimeout)
 

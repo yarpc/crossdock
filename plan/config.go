@@ -24,6 +24,7 @@ import (
 	"errors"
 	"os"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -36,13 +37,15 @@ const (
 // ReadConfigFromEnviron creates a Config by looking for environment variables
 func ReadConfigFromEnviron() (*Config, error) {
 	const (
-		reportKey         = "REPORT"
-		callTimeoutKey    = "CALL_TIMEOUT"
-		waitForTimeoutKey = "WAIT_FOR_TIMEOUT"
-		waitKey           = "WAIT_FOR"
-		axisKeyPrefix     = "AXIS_"
-		behaviorKeyPrefix = "BEHAVIOR_"
-		jsonReportPathKey = "JSON_REPORT_PATH"
+		reportKey               = "REPORT"
+		callTimeoutKey          = "CALL_TIMEOUT"
+		waitForTimeoutKey       = "WAIT_FOR_TIMEOUT"
+		waitKey                 = "WAIT_FOR"
+		axisKeyPrefix           = "AXIS_"
+		behaviorKeyPrefix       = "BEHAVIOR_"
+		jsonReportPathKey       = "JSON_REPORT_PATH"
+		horizontalScaleShardKey = "HORIZONTAL_SCALE_SHARD"
+		horizontalScaleCountKey = "HORIZONTAL_SCALE_COUNT"
 	)
 
 	callTimeout, _ := time.ParseDuration(os.Getenv(callTimeoutKey))
@@ -73,14 +76,34 @@ func ReadConfigFromEnviron() (*Config, error) {
 
 	jsonReportPath := os.Getenv(jsonReportPathKey)
 
+	var horizontalScaleShard int
+	var horizontalScaleCount int
+	var err error
+	horizontalScaleShardString := os.Getenv(horizontalScaleShardKey)
+	if horizontalScaleShardString != "" {
+		horizontalScaleShard, err = strconv.Atoi(horizontalScaleShardString)
+		if err != nil {
+			return nil, err
+		}
+	}
+	horizontalScaleCountString := os.Getenv(horizontalScaleCountKey)
+	if horizontalScaleCountString != "" {
+		horizontalScaleCount, err = strconv.Atoi(horizontalScaleCountString)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	config := &Config{
-		Reports:        reports,
-		CallTimeout:    callTimeout,
-		WaitForTimeout: waitForTimeout,
-		WaitForHosts:   waitForHosts,
-		Axes:           axes,
-		Behaviors:      behaviors,
-		JSONReportPath: jsonReportPath,
+		Reports:              reports,
+		CallTimeout:          callTimeout,
+		WaitForTimeout:       waitForTimeout,
+		WaitForHosts:         waitForHosts,
+		Axes:                 axes,
+		Behaviors:            behaviors,
+		JSONReportPath:       jsonReportPath,
+		HorizontalScaleShard: horizontalScaleShard,
+		HorizontalScaleCount: horizontalScaleCount,
 	}
 
 	if err := validateConfig(config); err != nil {
@@ -133,6 +156,11 @@ func validateConfig(config *Config) error {
 			if _, ok := axes[param]; !ok {
 				return errors.New("Can't find AXIS environment for: " + param)
 			}
+		}
+	}
+	if config.HorizontalScaleShard != 0 || config.HorizontalScaleCount != 0 {
+		if !(config.HorizontalScaleShard != 0 && config.HorizontalScaleCount != 0) {
+			return errors.New("either both of HORIZONTAL_SCALE_SHARD and HORIZONTAL_SCALE_COUNT must be set or neither set")
 		}
 	}
 	return nil
