@@ -65,10 +65,10 @@ type Filter struct {
 
 // Behavior represents the test behavior that will be triggered by crossdock
 type Behavior struct {
-	Name        string
-	ClientAxis  string
-	ParamsAxes  []string
-	SkipFilters []Filter
+	Name       string
+	ClientAxis string
+	ParamsAxes []string
+	Filters    []Filter
 }
 
 // HasAxis checks and returns true if passes axis is part of behavior, false otherwise.
@@ -102,7 +102,7 @@ func (b Behaviors) validateAndApplyFilters(filterByBehavior map[string][]Filter)
 				}
 			}
 		}
-		behavior.SkipFilters = filters
+		behavior.Filters = filters
 	}
 	return nil
 }

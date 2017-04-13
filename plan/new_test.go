@@ -194,7 +194,7 @@ func TestSkip(t *testing.T) {
 				Name:       "dance",
 				ClientAxis: "client",
 				ParamsAxes: []string{"server", "transport"},
-				SkipFilters: []Filter{
+				Filters: []Filter{
 					Filter{
 						AxisMatches: map[string]string{
 							"client": "alpha",
@@ -206,7 +206,7 @@ func TestSkip(t *testing.T) {
 				Name:       "sing",
 				ClientAxis: "client",
 				ParamsAxes: []string{"server", "transport"},
-				SkipFilters: []Filter{
+				Filters: []Filter{
 					Filter{
 						AxisMatches: map[string]string{
 							"client": "alpha",
@@ -220,7 +220,7 @@ func TestSkip(t *testing.T) {
 				Name:       "run",
 				ClientAxis: "client",
 				ParamsAxes: []string{"server", "transport"},
-				SkipFilters: []Filter{
+				Filters: []Filter{
 					Filter{
 						AxisMatches: map[string]string{
 							"client": "alpha",
@@ -246,25 +246,25 @@ func TestSkip(t *testing.T) {
 	wanted := []TestCase{
 		TestCase{Plan: plan, Client: "alpha",
 			Arguments: TestClientArgs{"behavior": "dance",
-				"client": "alpha", "server": "alpha", "transport": "http"}, Skip: true, SkipReason: "Filtered out in pruning"},
+				"client": "alpha", "server": "alpha", "transport": "http"}, Skip: true, SkipReason: "Pruned by SKIP_DANCE"},
 		TestCase{Plan: plan, Client: "omega",
 			Arguments: TestClientArgs{"transport": "http", "behavior": "dance",
 				"client": "omega", "server": "alpha"}, Skip: false},
 		TestCase{Plan: plan, Client: "alpha",
 			Arguments: TestClientArgs{"behavior": "dance", "client": "alpha",
-				"server": "omega", "transport": "http"}, Skip: true, SkipReason: "Filtered out in pruning"},
+				"server": "omega", "transport": "http"}, Skip: true, SkipReason: "Pruned by SKIP_DANCE"},
 		TestCase{Plan: plan, Client: "omega",
 			Arguments: TestClientArgs{"behavior": "dance", "client": "omega",
 				"server": "omega", "transport": "http"}, Skip: false},
 		TestCase{Plan: plan, Client: "alpha",
 			Arguments: TestClientArgs{"behavior": "dance", "client": "alpha",
-				"server": "alpha", "transport": "tchannel"}, Skip: true, SkipReason: "Filtered out in pruning"},
+				"server": "alpha", "transport": "tchannel"}, Skip: true, SkipReason: "Pruned by SKIP_DANCE"},
 		TestCase{Plan: plan, Client: "omega",
 			Arguments: TestClientArgs{"client": "omega", "server": "alpha",
 				"transport": "tchannel", "behavior": "dance"}, Skip: false},
 		TestCase{Plan: plan, Client: "alpha",
 			Arguments: TestClientArgs{"server": "omega", "transport": "tchannel",
-				"behavior": "dance", "client": "alpha"}, Skip: true, SkipReason: "Filtered out in pruning"},
+				"behavior": "dance", "client": "alpha"}, Skip: true, SkipReason: "Pruned by SKIP_DANCE"},
 		TestCase{Plan: plan, Client: "omega",
 			Arguments: TestClientArgs{"transport": "tchannel", "behavior": "dance",
 				"client": "omega", "server": "omega"}, Skip: false},
@@ -276,7 +276,7 @@ func TestSkip(t *testing.T) {
 				"server": "alpha", "transport": "http"}, Skip: false},
 		TestCase{Plan: plan, Client: "alpha",
 			Arguments: TestClientArgs{"behavior": "sing", "client": "alpha",
-				"server": "omega", "transport": "http"}, Skip: true, SkipReason: "Filtered out in pruning"},
+				"server": "omega", "transport": "http"}, Skip: true, SkipReason: "Pruned by SKIP_SING"},
 		TestCase{Plan: plan, Client: "omega",
 			Arguments: TestClientArgs{"behavior": "sing", "client": "omega",
 				"server": "omega", "transport": "http"}, Skip: false},
@@ -288,34 +288,34 @@ func TestSkip(t *testing.T) {
 				"server": "alpha", "transport": "tchannel"}, Skip: false},
 		TestCase{Plan: plan, Client: "alpha",
 			Arguments: TestClientArgs{"behavior": "sing", "client": "alpha",
-				"server": "omega", "transport": "tchannel"}, Skip: true, SkipReason: "Filtered out in pruning"},
+				"server": "omega", "transport": "tchannel"}, Skip: true, SkipReason: "Pruned by SKIP_SING"},
 		TestCase{Plan: plan, Client: "omega",
 			Arguments: TestClientArgs{"behavior": "sing", "client": "omega",
 				"server": "omega", "transport": "tchannel"}, Skip: false},
 		TestCase{Plan: plan, Client: "alpha",
 			Arguments: TestClientArgs{"client": "alpha", "server": "alpha",
-				"transport": "http", "behavior": "run"}, Skip: true, SkipReason: "Filtered out in pruning"},
+				"transport": "http", "behavior": "run"}, Skip: true, SkipReason: "Pruned by SKIP_RUN"},
 		TestCase{Plan: plan, Client: "omega",
 			Arguments: TestClientArgs{"behavior": "run", "client": "omega",
-				"server": "alpha", "transport": "http"}, Skip: true, SkipReason: "Filtered out in pruning"},
+				"server": "alpha", "transport": "http"}, Skip: true, SkipReason: "Pruned by SKIP_RUN"},
 		TestCase{Plan: plan, Client: "alpha",
 			Arguments: TestClientArgs{"behavior": "run", "client": "alpha",
-				"server": "omega", "transport": "http"}, Skip: true, SkipReason: "Filtered out in pruning"},
+				"server": "omega", "transport": "http"}, Skip: true, SkipReason: "Pruned by SKIP_RUN"},
 		TestCase{Plan: plan, Client: "omega",
 			Arguments: TestClientArgs{"behavior": "run", "client": "omega",
-				"server": "omega", "transport": "http"}, Skip: true, SkipReason: "Filtered out in pruning"},
+				"server": "omega", "transport": "http"}, Skip: true, SkipReason: "Pruned by SKIP_RUN"},
 		TestCase{Plan: plan, Client: "alpha",
 			Arguments: TestClientArgs{"server": "alpha", "transport": "tchannel",
-				"behavior": "run", "client": "alpha"}, Skip: true, SkipReason: "Filtered out in pruning"},
+				"behavior": "run", "client": "alpha"}, Skip: true, SkipReason: "Pruned by SKIP_RUN"},
 		TestCase{Plan: plan, Client: "omega",
 			Arguments: TestClientArgs{"behavior": "run", "client": "omega",
-				"server": "alpha", "transport": "tchannel"}, Skip: true, SkipReason: "Filtered out in pruning"},
+				"server": "alpha", "transport": "tchannel"}, Skip: true, SkipReason: "Pruned by SKIP_RUN"},
 		TestCase{Plan: plan, Client: "alpha",
 			Arguments: TestClientArgs{"behavior": "run", "client": "alpha",
-				"server": "omega", "transport": "tchannel"}, Skip: true, SkipReason: "Filtered out in pruning"},
+				"server": "omega", "transport": "tchannel"}, Skip: true, SkipReason: "Pruned by SKIP_RUN"},
 		TestCase{Plan: plan, Client: "omega",
 			Arguments: TestClientArgs{"behavior": "run", "client": "omega",
-				"server": "omega", "transport": "tchannel"}, Skip: true, SkipReason: "Filtered out in pruning"}}
+				"server": "omega", "transport": "tchannel"}, Skip: true, SkipReason: "Pruned by SKIP_RUN"}}
 
 	assert.Equal(t, plan.TestCases, wanted)
 }

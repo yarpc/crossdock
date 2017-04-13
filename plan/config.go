@@ -36,14 +36,14 @@ const (
 // ReadConfigFromEnviron creates a Config by looking for environment variables
 func ReadConfigFromEnviron() (*Config, error) {
 	const (
-		reportKey             = "REPORT"
-		callTimeoutKey        = "CALL_TIMEOUT"
-		waitForTimeoutKey     = "WAIT_FOR_TIMEOUT"
-		waitKey               = "WAIT_FOR"
-		axisKeyPrefix         = "AXIS_"
-		behaviorKeyPrefix     = "BEHAVIOR_"
-		behaviorSkipKeyPrefix = "BEHAVIOR_SKIP_"
-		jsonReportPathKey     = "JSON_REPORT_PATH"
+		reportKey         = "REPORT"
+		callTimeoutKey    = "CALL_TIMEOUT"
+		waitForTimeoutKey = "WAIT_FOR_TIMEOUT"
+		waitKey           = "WAIT_FOR"
+		axisKeyPrefix     = "AXIS_"
+		behaviorKeyPrefix = "BEHAVIOR_"
+		skipKeyPrefix     = "SKIP_"
+		jsonReportPathKey = "JSON_REPORT_PATH"
 	)
 
 	callTimeout, _ := time.ParseDuration(os.Getenv(callTimeoutKey))
@@ -65,8 +65,8 @@ func ReadConfigFromEnviron() (*Config, error) {
 		if strings.HasPrefix(e, axisKeyPrefix) {
 			axis := parseAxis(strings.TrimPrefix(e, axisKeyPrefix))
 			axes = append(axes, axis)
-		} else if strings.HasPrefix(e, behaviorSkipKeyPrefix) {
-			key, filter := parseSkipBehavior(strings.TrimPrefix(e, behaviorSkipKeyPrefix))
+		} else if strings.HasPrefix(e, skipKeyPrefix) {
+			key, filter := parseSkipBehavior(strings.TrimPrefix(e, skipKeyPrefix))
 			filterMap[key] = filter
 		} else if strings.HasPrefix(e, behaviorKeyPrefix) {
 			behavior := parseBehavior(strings.TrimPrefix(e, behaviorKeyPrefix))
@@ -116,6 +116,9 @@ func parseBehavior(d string) Behavior {
 	return behavior
 }
 
+// Skip string is of format SKIP_RUN=axis1:value1+axis2:value2,axis1:value3 where
+// SKIP_ is followed by behavior name and multiple filters are separated by comma.
+// Each filter is a logical AND and complete match is supported.
 func parseSkipBehavior(d string) (string, []Filter) {
 	pair := strings.SplitN(d, "=", 2)
 	key := strings.ToLower(pair[0])
@@ -127,7 +130,7 @@ func parseSkipBehavior(d string) (string, []Filter) {
 			AxisMatches: map[string]string{},
 		}
 		for _, strMatch := range strMatches {
-			tuple := strings.Split(strMatch, "=")
+			tuple := strings.Split(strMatch, ":")
 			tuple = trimCollection(tuple)
 			filter.AxisMatches[tuple[0]] = tuple[1]
 		}

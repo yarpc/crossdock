@@ -34,7 +34,7 @@ func TestReadConfigFromEnviron(t *testing.T) {
 	os.Setenv("AXIS_SERVER", "yarpc-go,yarpc-node")
 	os.Setenv("AXIS_TRANSPORT", "http,tchannel")
 	os.Setenv("BEHAVIOR_ECHO", "client,server,transport")
-	os.Setenv("BEHAVIOR_SKIP_ECHO", "client=yarpc-go+transport=tchannel")
+	os.Setenv("SKIP_ECHO", "client:yarpc-go+transport:tchannel")
 	os.Setenv("CALL_TIMEOUT", "10s")
 	os.Setenv("WAIT_FOR_TIMEOUT", "20s")
 	defer os.Clearenv()
@@ -65,7 +65,7 @@ func TestReadConfigFromEnviron(t *testing.T) {
 			Name:       "echo",
 			ClientAxis: "client",
 			ParamsAxes: []string{"server", "transport"},
-			SkipFilters: []Filter{
+			Filters: []Filter{
 				Filter{
 					AxisMatches: map[string]string{
 						"client":    "yarpc-go",
@@ -130,11 +130,13 @@ func TestParseBehavior(t *testing.T) {
 func TestParseSkipBehavior(t *testing.T) {
 	tests := []struct {
 		give       string
+		desc       string
 		wantFilter []Filter
 		wantKey    string
 	}{
 		{
-			give: "foo=client=c+server=b",
+			give: "foo=client:c+server:b",
+			desc: "skip all cases in the 'foo' behavior and where client axis  has value 'c' and server axis has value 'b'.",
 			wantFilter: []Filter{
 				{
 					AxisMatches: map[string]string{
@@ -146,7 +148,8 @@ func TestParseSkipBehavior(t *testing.T) {
 			wantKey: "foo",
 		},
 		{
-			give: "x=a=b,c=d",
+			give: "x=a:b,c:d",
+			desc: "skip all cases in the 'x' behavior and where axis a has value 'b' and axis c has value 'd'.",
 			wantFilter: []Filter{
 				{
 					AxisMatches: map[string]string{
@@ -165,7 +168,7 @@ func TestParseSkipBehavior(t *testing.T) {
 
 	for _, tt := range tests {
 		key, filter := parseSkipBehavior(tt.give)
-		assert.Equal(t, tt.wantFilter, filter)
-		assert.Equal(t, tt.wantKey, key)
+		assert.Equal(t, tt.wantFilter, filter, tt.desc)
+		assert.Equal(t, tt.wantKey, key, tt.desc)
 	}
 }

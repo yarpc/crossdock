@@ -20,6 +20,11 @@
 
 package plan
 
+import (
+	"fmt"
+	"strings"
+)
+
 // New creates a Plan given a Config
 func New(config *Config) *Plan {
 	plan := &Plan{
@@ -55,7 +60,7 @@ func buildTestCases(plan *Plan) []TestCase {
 				Skip:      false,
 			}
 
-			for _, filter := range behavior.SkipFilters {
+			for _, filter := range behavior.Filters {
 				// Each filter should be a complete match
 				matchCnt := 0
 				for key, value := range filter.AxisMatches {
@@ -66,7 +71,7 @@ func buildTestCases(plan *Plan) []TestCase {
 				}
 				if matchCnt == len(filter.AxisMatches) {
 					t.Skip = true
-					t.SkipReason = "Filtered out in pruning"
+					t.SkipReason = fmt.Sprintf("Pruned by SKIP_%s", strings.ToUpper(behavior.Name))
 					break
 				}
 			}
