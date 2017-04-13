@@ -21,6 +21,7 @@
 package plan
 
 import (
+	"fmt"
 	"os"
 	"testing"
 	"time"
@@ -133,10 +134,11 @@ func TestParseSkipBehavior(t *testing.T) {
 		desc       string
 		wantFilter []Filter
 		wantKey    string
+		wantError  error
 	}{
 		{
 			give: "foo=client:c+server:b",
-			desc: "skip all cases in the 'foo' behavior and where client axis  has value 'c' and server axis has value 'b'.",
+			desc: "single filter.",
 			wantFilter: []Filter{
 				{
 					AxisMatches: map[string]string{
@@ -145,11 +147,12 @@ func TestParseSkipBehavior(t *testing.T) {
 					},
 				},
 			},
-			wantKey: "foo",
+			wantKey:   "foo",
+			wantError: nil,
 		},
 		{
 			give: "x=a:b,c:d",
-			desc: "skip all cases in the 'x' behavior and where axis a has value 'b' and axis c has value 'd'.",
+			desc: "multiple filters.",
 			wantFilter: []Filter{
 				{
 					AxisMatches: map[string]string{
@@ -162,13 +165,36 @@ func TestParseSkipBehavior(t *testing.T) {
 					},
 				},
 			},
-			wantKey: "x",
+			wantKey:   "x",
+			wantError: nil,
+		},
+		{
+			give: "foo=client:weird:name+server:b",
+			desc: "single filter testing name separation.",
+			wantFilter: []Filter{
+				{
+					AxisMatches: map[string]string{
+						"client": "weird:name",
+						"server": "b",
+					},
+				},
+			},
+			wantKey:   "foo",
+			wantError: nil,
+		},
+		{
+			give:       "x=a:b,,c:d",
+			desc:       "invalid filters",
+			wantFilter: nil,
+			wantKey:    "",
+			wantError:  fmt.Errorf("Invalid filter definition:  in input x=a:b,,c:d"),
 		},
 	}
 
 	for _, tt := range tests {
-		key, filter := parseSkipBehavior(tt.give)
+		key, filter, err := parseSkipBehavior(tt.give)
 		assert.Equal(t, tt.wantFilter, filter, tt.desc)
 		assert.Equal(t, tt.wantKey, key, tt.desc)
+		assert.Equal(t, tt.wantError, err)
 	}
 }

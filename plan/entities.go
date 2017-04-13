@@ -58,7 +58,9 @@ func (a Axes) Index() map[string]Axis {
 	return axes
 }
 
-// Filter is collection of axis to escape
+// Filter is collection of axis to escape the execution of behavior.
+// Each attribute in collection is key value pair which has the name of axis
+// and value of axis to escape.
 type Filter struct {
 	AxisMatches map[string]string
 }
@@ -71,13 +73,12 @@ type Behavior struct {
 	Filters    []Filter
 }
 
-// HasAxis checks and returns true if passes axis is part of behavior, false otherwise.
-func (b Behavior) HasAxis(axis string) bool {
-	return axis == b.ClientAxis || axesContainsAxis(axis, b.ParamsAxes)
-}
-
-func axesContainsAxis(axisToFind string, axes []string) bool {
-	for _, axis := range axes {
+// HasAxis checks and returns true if the passed axis is part of behavior, false otherwise.
+func (b Behavior) HasAxis(axisToFind string) bool {
+	if axisToFind == b.ClientAxis {
+		return true
+	}
+	for _, axis := range b.ParamsAxes {
 		if axis == axisToFind {
 			return true
 		}
@@ -91,10 +92,10 @@ type Behaviors []Behavior
 func (b Behaviors) Len() int           { return len(b) }
 func (b Behaviors) Swap(i, j int)      { b[i], b[j] = b[j], b[i] }
 func (b Behaviors) Less(i, j int) bool { return b[i].Name < b[j].Name }
-func (b Behaviors) validateAndApplyFilters(filterByBehavior map[string][]Filter) error {
-	for i := range b {
-		behavior := &b[i]
-		filters := filterByBehavior[behavior.Name]
+
+func (b Behaviors) validateAndApplyFilters(filtersByBehavior map[string][]Filter) error {
+	for i, behavior := range b {
+		filters := filtersByBehavior[behavior.Name]
 		for _, filter := range filters {
 			for axisToMatch := range filter.AxisMatches {
 				if !behavior.HasAxis(axisToMatch) {
@@ -103,6 +104,7 @@ func (b Behaviors) validateAndApplyFilters(filterByBehavior map[string][]Filter)
 			}
 		}
 		behavior.Filters = filters
+		b[i] = behavior
 	}
 	return nil
 }

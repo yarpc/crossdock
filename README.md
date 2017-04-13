@@ -71,6 +71,22 @@ Beginning matrix of tests...
   PASSED | omega  | ok       | slow  | run
 ```
 
+## Support for filtering using SKIP_
+
+Skip clauses are comprised of zero or more filter expressions separated by commas. These are or-ed together.
+```
+SKIP_RUN=filter1,filter2,...,filterN
+```
+Where each filter consists or zero or more axis matchers separated by ``` + ``` s. These are and-ed together.
+```
+axis1:value1+axis2:value2+...+axisN:valueN
+```
+For example,
+```
+SKIP_RUN=clients:alpha+speed=slow
+```
+This states that for the RUN behavior, we will skip any test cases where clients is alpha and speed is slow.
+
 ## How To Use
 
 1. [Write Test Client](docs/write-test-client.md)

@@ -22,6 +22,7 @@ package plan
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"sort"
 	"strings"
@@ -62,21 +63,27 @@ func ReadConfigFromEnviron() (*Config, error) {
 	var behaviors Behaviors
 	filterMap := make(map[string][]Filter)
 	for _, e := range os.Environ() {
-		if strings.HasPrefix(e, axisKeyPrefix) {
+		switch {
+		case strings.HasPrefix(e, axisKeyPrefix):
 			axis := parseAxis(strings.TrimPrefix(e, axisKeyPrefix))
 			axes = append(axes, axis)
-		} else if strings.HasPrefix(e, skipKeyPrefix) {
-			key, filter := parseSkipBehavior(strings.TrimPrefix(e, skipKeyPrefix))
-			filterMap[key] = filter
-		} else if strings.HasPrefix(e, behaviorKeyPrefix) {
+			break
+		case strings.HasPrefix(e, skipKeyPrefix):
+			key, filters, err := parseSkipBehavior(strings.TrimPrefix(e, skipKeyPrefix))
+			if err != nil {
+				return nil, err
+			}
+			filterMap[key] = filters
+			break
+		case strings.HasPrefix(e, behaviorKeyPrefix):
 			behavior := parseBehavior(strings.TrimPrefix(e, behaviorKeyPrefix))
 			behaviors = append(behaviors, behavior)
+			break
 		}
 	}
 	sort.Sort(axes)
 	sort.Sort(behaviors)
-	err := behaviors.validateAndApplyFilters(filterMap)
-	if err != nil {
+	if err := behaviors.validateAndApplyFilters(filterMap); err != nil {
 		return nil, err
 	}
 
@@ -116,27 +123,30 @@ func parseBehavior(d string) Behavior {
 	return behavior
 }
 
-// Skip string is of format SKIP_RUN=axis1:value1+axis2:value2,axis1:value3 where
-// SKIP_ is followed by behavior name and multiple filters are separated by comma.
-// Each filter is a logical AND and complete match is supported.
-func parseSkipBehavior(d string) (string, []Filter) {
+func parseSkipBehavior(d string) (string, []Filter, error) {
 	pair := strings.SplitN(d, "=", 2)
+	if len(pair) != 2 {
+		return "", nil, fmt.Errorf("Invalid input: %s", d)
+	}
 	key := strings.ToLower(pair[0])
 	rawFilters := strings.Split(pair[1], ",")
-	var filters []Filter
+	filters := make([]Filter, 0, len(rawFilters))
 	for _, rawFilter := range rawFilters {
-		strMatches := strings.Split(rawFilter, "+")
+		rawMatches := strings.Split(rawFilter, "+")
 		filter := Filter{
-			AxisMatches: map[string]string{},
+			AxisMatches: make(map[string]string),
 		}
-		for _, strMatch := range strMatches {
-			tuple := strings.Split(strMatch, ":")
+		for _, rawMatch := range rawMatches {
+			tuple := strings.SplitN(rawMatch, ":", 2)
+			if len(tuple) != 2 {
+				return "", nil, fmt.Errorf("Invalid filter definition: %s in input %s", rawMatch, d)
+			}
 			tuple = trimCollection(tuple)
 			filter.AxisMatches[tuple[0]] = tuple[1]
 		}
 		filters = append(filters, filter)
 	}
-	return key, filters
+	return key, filters, nil
 }
 
 func parseAxis(d string) Axis {

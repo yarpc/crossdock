@@ -22,6 +22,7 @@ package plan
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 )
 
@@ -71,7 +72,16 @@ func buildTestCases(plan *Plan) []TestCase {
 				}
 				if matchCnt == len(filter.AxisMatches) {
 					t.Skip = true
-					t.SkipReason = fmt.Sprintf("Pruned by SKIP_%s", strings.ToUpper(behavior.Name))
+					var formattedMatches []string
+					var keys []string
+					for k := range filter.AxisMatches {
+						keys = append(keys, k)
+					}
+					sort.Strings(keys)
+					for _, key := range keys {
+						formattedMatches = append(formattedMatches, fmt.Sprintf("%s:%s", key, filter.AxisMatches[key]))
+					}
+					t.SkipReason = fmt.Sprintf("Pruned by SKIP_%s=%s", strings.ToUpper(behavior.Name), strings.Join(formattedMatches, "+"))
 					break
 				}
 			}
