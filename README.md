@@ -71,21 +71,35 @@ Beginning matrix of tests...
   PASSED | omega  | ok       | slow  | run
 ```
 
-## Support for filtering using SKIP_
+## Skipping test cases
 
-Skip clauses are comprised of zero or more filter expressions separated by commas. These are or-ed together.
-```
-SKIP_RUN=filter1,filter2,...,filterN
-```
-Where each filter consists or zero or more axis matchers separated by ` + ` s. These are and-ed together.
-```
-axis1:value1+axis2:value2+...+axisN:valueN
-```
+There are scenarios where you don't want to run the full cross-product of the
+axes a behavior depends on. To accommodate this, crossdock supports filtering
+of test cases.
+
+For any behavior, a `SKIP_$name` environment variable may be declared, where
+`$name` is the name of the behavior, specifying a list of zero or more filters
+separated by commas.
+
+    filter1,filter2,...,filterN
+
+Each filter consists of zero or more axis matchers separated by `+`.
+
+    axis1:value1+axis2:value2+...+axisN:valueN
+
+A filter matches a test case of a behavior if all axis matchers specified in
+the filter match the parameters for that behavior. A test case for a behavior
+is skipped if any of the filters specified for it match the parameters.
+
 For example,
-```
-SKIP_RUN=clients:alpha+speed=slow
-```
-This states that for the RUN behavior, we will skip any test cases where clients is alpha and speed is slow.
+
+    SKIP_RUN=clients:alpha+speed=slow,clients:omega+speed=fast
+
+The above states that test cases of the `RUN` behavior should be skipped when
+one of the following is true:
+
+-   `clients` is `alpha` and `speed` is `slow`; or
+-   `clients` is `omega` and `speed` is `fast`
 
 ## How To Use
 
