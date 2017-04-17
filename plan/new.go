@@ -63,7 +63,7 @@ func buildTestCases(plan *Plan) []TestCase {
 			for _, filter := range behavior.Filters {
 				if filter.Matches(testArgs) {
 					t.Skip = true
-					t.SkipReason = fmt.Sprintf("SKIP_%s=%s", strings.ToUpper(behavior.Name), strings.Join(filter.String(), "+"))
+					t.SkipReason = fmt.Sprintf("SKIP_%s=%s", strings.ToUpper(behavior.Name), filter.String())
 					break
 				}
 			}

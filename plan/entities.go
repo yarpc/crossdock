@@ -22,6 +22,7 @@ package plan
 
 import (
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -74,13 +75,13 @@ func (f Filter) Matches(testArgs TestClientArgs) bool {
 	return true
 }
 
-// String returns slice of formatted matches in the Filter.
-func (f Filter) String() []string {
+// String returns formatted matches in the Filter separated by a'+'.
+func (f Filter) String() string {
 	var formattedMatches []string
 	for _, match := range f.Matchers {
 		formattedMatches = append(formattedMatches, match.String())
 	}
-	return formattedMatches
+	return strings.Join(formattedMatches, "+")
 }
 
 // AxisMatcher matches an axis name to a give value.
