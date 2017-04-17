@@ -74,6 +74,15 @@ func (f Filter) Matches(testArgs TestClientArgs) bool {
 	return true
 }
 
+// String returns slice of formatted matches in the Filter.
+func (f Filter) String() []string {
+	var formattedMatches []string
+	for _, match := range f.Matchers {
+		formattedMatches = append(formattedMatches, match.String())
+	}
+	return formattedMatches
+}
+
 // AxisMatcher matches an axis name to a give value.
 type AxisMatcher struct {
 	Name  string
@@ -82,10 +91,12 @@ type AxisMatcher struct {
 
 // Matches returns true if the given TestClientArgs match this AxisMatcher.
 func (a AxisMatcher) Matches(args TestClientArgs) bool {
-	if args[a.Name] == a.Value {
-		return true
-	}
-	return false
+	return args[a.Name] == a.Value
+}
+
+// String return a formatted string for axis and value separated by colon.
+func (a AxisMatcher) String() string {
+	return fmt.Sprintf("%s:%s", a.Name, a.Value)
 }
 
 // Behavior represents the test behavior that will be triggered by crossdock.

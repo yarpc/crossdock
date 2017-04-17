@@ -206,52 +206,52 @@ func TestParseSkipBehavior(t *testing.T) {
 		{
 			desc:      "invalid: empty filter",
 			give:      "x=a:b,,c:d",
-			wantError: fmt.Errorf("invalid matcher \"\" in input \"x=a:b,,c:d\" is not of form 'key:value'"),
+			wantError: fmt.Errorf(`invalid matcher "" in input "x=a:b,,c:d" is not of form 'key:value'`),
 		},
 		{
 			desc:      "invalid filters",
 			give:      "x",
-			wantError: fmt.Errorf("missing '=' in the input: \"x\""),
+			wantError: fmt.Errorf(`missing '=' in the input: "x"`),
 		},
 		{
 			desc:      "invalid filters",
 			give:      "",
-			wantError: fmt.Errorf("missing '=' in the input: \"\""),
+			wantError: fmt.Errorf(`missing '=' in the input: ""`),
 		},
 		{
 			desc:      "invalid filters",
 			give:      "  x    ",
-			wantError: fmt.Errorf("missing '=' in the input: \"  x    \""),
+			wantError: fmt.Errorf(`missing '=' in the input: "  x    "`),
 		},
 		{
 			desc:      "invalid: empty matcher",
 			give:      "x=:",
-			wantError: fmt.Errorf("invalid matcher \":\": axis name and value are required"),
+			wantError: fmt.Errorf(`invalid matcher ":": axis name and value are required`),
 		},
 		{
 			desc:      "invalid filters",
 			give:      "x=",
-			wantError: fmt.Errorf("invalid matcher \"\" in input \"x=\" is not of form 'key:value'"),
+			wantError: fmt.Errorf(`invalid matcher "" in input "x=" is not of form 'key:value'`),
 		},
 		{
 			desc:      "invalid filters",
 			give:      "x  =  ",
-			wantError: fmt.Errorf("invalid matcher \"  \" in input \"x  =  \" is not of form 'key:value'"),
+			wantError: fmt.Errorf(`invalid matcher "  " in input "x  =  " is not of form 'key:value'`),
 		},
 		{
 			desc:      "invalid: empty matcher",
 			give:      "x= :",
-			wantError: fmt.Errorf("invalid matcher \" :\": axis name and value are required"),
+			wantError: fmt.Errorf(`invalid matcher " :": axis name and value are required`),
 		},
 		{
 			desc:      "invalid: empty matcher",
 			give:      "x=  :  ",
-			wantError: fmt.Errorf("invalid matcher \"  :  \": axis name and value are required"),
+			wantError: fmt.Errorf(`invalid matcher "  :  ": axis name and value are required`),
 		},
 		{
 			desc:      "invalid: empty matcher",
 			give:      "x=     :",
-			wantError: fmt.Errorf("invalid matcher \"     :\": axis name and value are required"),
+			wantError: fmt.Errorf(`invalid matcher "     :": axis name and value are required`),
 		},
 	}
 
