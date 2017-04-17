@@ -68,9 +68,15 @@ func TestReadConfigFromEnviron(t *testing.T) {
 			ParamsAxes: []string{"server", "transport"},
 			Filters: []Filter{
 				Filter{
-					AxisMatches: map[string]string{
-						"client":    "yarpc-go",
-						"transport": "tchannel",
+					AxisMatches: []AxisMatch{
+						AxisMatch{
+							Name:  "client",
+							Value: "yarpc-go",
+						},
+						AxisMatch{
+							Name:  "transport",
+							Value: "tchannel",
+						},
 					},
 				},
 			},
@@ -130,71 +136,125 @@ func TestParseBehavior(t *testing.T) {
 
 func TestParseSkipBehavior(t *testing.T) {
 	tests := []struct {
-		give       string
-		desc       string
-		wantFilter []Filter
-		wantKey    string
-		wantError  error
+		give             string
+		desc             string
+		wantFilters      []Filter
+		wantBehaviorName string
+		wantError        error
 	}{
 		{
 			give: "foo=client:c+server:b",
 			desc: "single filter.",
-			wantFilter: []Filter{
+			wantFilters: []Filter{
 				{
-					AxisMatches: map[string]string{
-						"client": "c",
-						"server": "b",
+					AxisMatches: []AxisMatch{
+						AxisMatch{
+							Name:  "client",
+							Value: "c",
+						},
+						AxisMatch{
+							Name:  "server",
+							Value: "b",
+						},
 					},
 				},
 			},
-			wantKey:   "foo",
-			wantError: nil,
+			wantBehaviorName: "foo",
+			wantError:        nil,
 		},
 		{
 			give: "x=a:b,c:d",
 			desc: "multiple filters.",
-			wantFilter: []Filter{
+			wantFilters: []Filter{
 				{
-					AxisMatches: map[string]string{
-						"a": "b",
+					AxisMatches: []AxisMatch{
+						AxisMatch{
+							Name:  "a",
+							Value: "b",
+						},
 					},
 				},
 				{
-					AxisMatches: map[string]string{
-						"c": "d",
+					AxisMatches: []AxisMatch{
+						AxisMatch{
+							Name:  "c",
+							Value: "d",
+						},
 					},
 				},
 			},
-			wantKey:   "x",
-			wantError: nil,
+			wantBehaviorName: "x",
+			wantError:        nil,
 		},
 		{
 			give: "foo=client:weird:name+server:b",
 			desc: "single filter testing name separation.",
-			wantFilter: []Filter{
+			wantFilters: []Filter{
 				{
-					AxisMatches: map[string]string{
-						"client": "weird:name",
-						"server": "b",
+					AxisMatches: []AxisMatch{
+						AxisMatch{
+							Name:  "client",
+							Value: "weird:name",
+						},
+						AxisMatch{
+							Name:  "server",
+							Value: "b",
+						},
 					},
 				},
 			},
-			wantKey:   "foo",
-			wantError: nil,
+			wantBehaviorName: "foo",
+			wantError:        nil,
 		},
 		{
-			give:       "x=a:b,,c:d",
-			desc:       "invalid filters",
-			wantFilter: nil,
-			wantKey:    "",
-			wantError:  fmt.Errorf("Invalid filter definition:  in input x=a:b,,c:d"),
+			give:             "x=a:b,,c:d",
+			desc:             "invalid filters",
+			wantFilters:      nil,
+			wantBehaviorName: "",
+			wantError:        fmt.Errorf("match \"\" in input x=a:b,,c:d is not of form 'key:value'"),
+		},
+		{
+			give:             "x",
+			desc:             "invalid filters",
+			wantFilters:      nil,
+			wantBehaviorName: "",
+			wantError:        fmt.Errorf("missing '=' in the input: \"x\""),
+		},
+		{
+			give:             "x=:",
+			desc:             "invalid filters",
+			wantFilters:      nil,
+			wantBehaviorName: "",
+			wantError:        fmt.Errorf("match \":\" in input x=: is not of form 'key:value'"),
+		},
+		{
+			give:             "x=",
+			desc:             "invalid filters",
+			wantFilters:      nil,
+			wantBehaviorName: "",
+			wantError:        fmt.Errorf("match \"\" in input x= is not of form 'key:value'"),
+		},
+		{
+			give:             "x= :",
+			desc:             "invalid filters",
+			wantFilters:      nil,
+			wantBehaviorName: "",
+			wantError:        fmt.Errorf("match \" :\" in input x= : is not of form 'key:value'"),
 		},
 	}
 
 	for _, tt := range tests {
-		key, filter, err := parseSkipBehavior(tt.give)
-		assert.Equal(t, tt.wantFilter, filter, tt.desc)
-		assert.Equal(t, tt.wantKey, key, tt.desc)
-		assert.Equal(t, tt.wantError, err)
+		behaviorName, filters, err := parseSkipBehavior(tt.give)
+		if tt.wantError != nil {
+			if assert.Error(t, err) {
+				assert.Equal(t, tt.wantError, err)
+			}
+		} else {
+			if assert.NoError(t, err) {
+				assert.Equal(t, tt.wantFilters, filters, tt.desc)
+				assert.Equal(t, tt.wantBehaviorName, behaviorName, tt.desc)
+			}
+		}
+
 	}
 }

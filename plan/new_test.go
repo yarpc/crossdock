@@ -196,8 +196,11 @@ func TestSkip(t *testing.T) {
 				ParamsAxes: []string{"server", "transport"},
 				Filters: []Filter{
 					Filter{
-						AxisMatches: map[string]string{
-							"client": "alpha",
+						AxisMatches: []AxisMatch{
+							AxisMatch{
+								Name:  "client",
+								Value: "alpha",
+							},
 						},
 					},
 				},
@@ -208,9 +211,15 @@ func TestSkip(t *testing.T) {
 				ParamsAxes: []string{"server", "transport"},
 				Filters: []Filter{
 					Filter{
-						AxisMatches: map[string]string{
-							"client": "alpha",
-							"server": "omega",
+						AxisMatches: []AxisMatch{
+							AxisMatch{
+								Name:  "client",
+								Value: "alpha",
+							},
+							AxisMatch{
+								Name:  "server",
+								Value: "omega",
+							},
 						},
 					},
 				},
@@ -222,14 +231,23 @@ func TestSkip(t *testing.T) {
 				ParamsAxes: []string{"server", "transport"},
 				Filters: []Filter{
 					Filter{
-						AxisMatches: map[string]string{
-							"client": "alpha",
-							"server": "omega",
+						AxisMatches: []AxisMatch{
+							AxisMatch{
+								Name:  "client",
+								Value: "alpha",
+							},
+							AxisMatch{
+								Name:  "server",
+								Value: "omega",
+							},
 						},
 					},
 					Filter{
-						AxisMatches: map[string]string{
-							"server": "alpha",
+						AxisMatches: []AxisMatch{
+							AxisMatch{
+								Name:  "server",
+								Value: "alpha",
+							},
 						},
 					},
 				},

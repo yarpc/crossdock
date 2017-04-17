@@ -67,24 +67,21 @@ func ReadConfigFromEnviron() (*Config, error) {
 		case strings.HasPrefix(e, axisKeyPrefix):
 			axis := parseAxis(strings.TrimPrefix(e, axisKeyPrefix))
 			axes = append(axes, axis)
-			break
 		case strings.HasPrefix(e, skipKeyPrefix):
 			key, filters, err := parseSkipBehavior(strings.TrimPrefix(e, skipKeyPrefix))
 			if err != nil {
-				return nil, err
+				return nil, fmt.Errorf("failed to parse filters from %q: %v", e, err)
 			}
 			filterMap[key] = filters
-			break
 		case strings.HasPrefix(e, behaviorKeyPrefix):
 			behavior := parseBehavior(strings.TrimPrefix(e, behaviorKeyPrefix))
 			behaviors = append(behaviors, behavior)
-			break
 		}
 	}
 	sort.Sort(axes)
 	sort.Sort(behaviors)
 	if err := behaviors.validateAndApplyFilters(filterMap); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to validate filters: %v", err)
 	}
 
 	jsonReportPath := os.Getenv(jsonReportPathKey)
@@ -105,6 +102,7 @@ func ReadConfigFromEnviron() (*Config, error) {
 	return config, nil
 }
 
+// TODO: return an error if input is malformed.
 func parseBehavior(d string) Behavior {
 	pair := strings.SplitN(d, "=", 2)
 	key := strings.ToLower(pair[0])
@@ -126,27 +124,29 @@ func parseBehavior(d string) Behavior {
 func parseSkipBehavior(d string) (string, []Filter, error) {
 	pair := strings.SplitN(d, "=", 2)
 	if len(pair) != 2 {
-		return "", nil, fmt.Errorf("Invalid input: %s", d)
+		return "", nil, fmt.Errorf("missing '=' in the input: %q", d)
 	}
-	key := strings.ToLower(pair[0])
+	behaviorName := strings.ToLower(pair[0])
 	rawFilters := strings.Split(pair[1], ",")
 	filters := make([]Filter, 0, len(rawFilters))
 	for _, rawFilter := range rawFilters {
 		rawMatches := strings.Split(rawFilter, "+")
 		filter := Filter{
-			AxisMatches: make(map[string]string),
+			AxisMatches: make([]AxisMatch, 0, len(rawMatches)),
 		}
 		for _, rawMatch := range rawMatches {
 			tuple := strings.SplitN(rawMatch, ":", 2)
-			if len(tuple) != 2 {
-				return "", nil, fmt.Errorf("Invalid filter definition: %s in input %s", rawMatch, d)
-			}
 			tuple = trimCollection(tuple)
-			filter.AxisMatches[tuple[0]] = tuple[1]
+			if len(tuple) != 2 {
+				return "", nil, fmt.Errorf("match %q in input %s is not of form 'key:value'", rawMatch, d)
+			}
+			axisName := tuple[0]
+			axisValue := tuple[1]
+			filter.AxisMatches = append(filter.AxisMatches, AxisMatch{Name: axisName, Value: axisValue})
 		}
 		filters = append(filters, filter)
 	}
-	return key, filters, nil
+	return behaviorName, filters, nil
 }
 
 func parseAxis(d string) Axis {
@@ -164,15 +164,16 @@ func parseAxis(d string) Axis {
 	return axis
 }
 
+// TODO: Return an error if input is malformed.
 func validateConfig(config *Config) error {
 	axes := config.Axes.Index()
 	for _, behavior := range config.Behaviors {
 		if _, ok := axes[behavior.ClientAxis]; !ok {
-			return errors.New("Can't find AXIS environment for: " + behavior.ClientAxis)
+			return errors.New("can't find AXIS environment for: " + behavior.ClientAxis)
 		}
 		for _, param := range behavior.ParamsAxes {
 			if _, ok := axes[param]; !ok {
-				return errors.New("Can't find AXIS environment for: " + param)
+				return errors.New("can't find AXIS environment for: " + param)
 			}
 		}
 	}

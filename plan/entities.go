@@ -59,10 +59,16 @@ func (a Axes) Index() map[string]Axis {
 }
 
 // Filter specifies criteria for skipping specific test cases of a behavior.
-// AxisMatches holds a mapping of behavior parameters to values.
+// AxisMatches holds a mapping axis name to axis value.
 // All test cases for a behavior where all parameter values match the map will be skipped.
 type Filter struct {
-	AxisMatches map[string]string
+	AxisMatches []AxisMatch
+}
+
+// AxisMatch matches an axis name to a give value.
+type AxisMatch struct {
+	Name  string
+	Value string
 }
 
 // Behavior represents the test behavior that will be triggered by crossdock
@@ -73,7 +79,7 @@ type Behavior struct {
 	Filters    []Filter
 }
 
-// HasAxis checks and returns true if the passed axis is part of behavior, false otherwise.
+// HasAxis checks and returns true if the passed axis is referenced by the behavior, false otherwise.
 func (b Behavior) HasAxis(axisToFind string) bool {
 	if axisToFind == b.ClientAxis {
 		return true
@@ -97,8 +103,8 @@ func (b Behaviors) validateAndApplyFilters(filtersByBehavior map[string][]Filter
 	for i, behavior := range b {
 		filters := filtersByBehavior[behavior.Name]
 		for _, filter := range filters {
-			for axisToMatch := range filter.AxisMatches {
-				if !behavior.HasAxis(axisToMatch) {
+			for _, axisToMatch := range filter.AxisMatches {
+				if !behavior.HasAxis(axisToMatch.Name) {
 					return fmt.Errorf("%v is not defined in axis for %v", axisToMatch, behavior.Name)
 				}
 			}
