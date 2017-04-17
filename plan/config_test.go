@@ -211,7 +211,7 @@ func TestParseSkipBehavior(t *testing.T) {
 			desc:             "invalid filters",
 			wantFilters:      nil,
 			wantBehaviorName: "",
-			wantError:        fmt.Errorf("match \"\" in input x=a:b,,c:d is not of form 'key:value'"),
+			wantError:        fmt.Errorf("match \"\" in input \"x=a:b,,c:d\" is not of form 'key:value'"),
 		},
 		{
 			give:             "x",
@@ -221,25 +221,46 @@ func TestParseSkipBehavior(t *testing.T) {
 			wantError:        fmt.Errorf("missing '=' in the input: \"x\""),
 		},
 		{
+			give:             "  x    ",
+			desc:             "invalid filters",
+			wantFilters:      nil,
+			wantBehaviorName: "",
+			wantError:        fmt.Errorf("missing '=' in the input: \"  x    \""),
+		},
+		{
 			give:             "x=:",
 			desc:             "invalid filters",
 			wantFilters:      nil,
 			wantBehaviorName: "",
-			wantError:        fmt.Errorf("match \":\" in input x=: is not of form 'key:value'"),
+			wantError:        fmt.Errorf("match \":\" in input \"x=:\" is empty"),
 		},
 		{
 			give:             "x=",
 			desc:             "invalid filters",
 			wantFilters:      nil,
 			wantBehaviorName: "",
-			wantError:        fmt.Errorf("match \"\" in input x= is not of form 'key:value'"),
+			wantError:        fmt.Errorf("match \"\" in input \"x=\" is not of form 'key:value'"),
+		},
+		{
+			give:             "x  =  ",
+			desc:             "invalid filters",
+			wantFilters:      nil,
+			wantBehaviorName: "",
+			wantError:        fmt.Errorf("match \"  \" in input \"x  =  \" is not of form 'key:value'"),
 		},
 		{
 			give:             "x= :",
 			desc:             "invalid filters",
 			wantFilters:      nil,
 			wantBehaviorName: "",
-			wantError:        fmt.Errorf("match \" :\" in input x= : is not of form 'key:value'"),
+			wantError:        fmt.Errorf("match \" :\" in input \"x= :\" is empty"),
+		},
+		{
+			give:             "x=     :",
+			desc:             "invalid filters",
+			wantFilters:      nil,
+			wantBehaviorName: "",
+			wantError:        fmt.Errorf("match \"     :\" in input \"x=     :\" is empty"),
 		},
 	}
 

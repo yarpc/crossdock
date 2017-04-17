@@ -59,8 +59,7 @@ func (a Axes) Index() map[string]Axis {
 }
 
 // Filter specifies criteria for skipping specific test cases of a behavior.
-// AxisMatches holds a mapping axis name to axis value.
-// All test cases for a behavior where all parameter values match the map will be skipped.
+// All test cases for a behavior where all parameter values match the AxisMatches will be skipped.
 type Filter struct {
 	AxisMatches []AxisMatch
 }
@@ -71,7 +70,7 @@ type AxisMatch struct {
 	Value string
 }
 
-// Behavior represents the test behavior that will be triggered by crossdock
+// Behavior represents the test behavior that will be triggered by crossdock.
 type Behavior struct {
 	Name       string
 	ClientAxis string

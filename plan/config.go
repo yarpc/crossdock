@@ -21,7 +21,6 @@
 package plan
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"sort"
@@ -68,11 +67,11 @@ func ReadConfigFromEnviron() (*Config, error) {
 			axis := parseAxis(strings.TrimPrefix(e, axisKeyPrefix))
 			axes = append(axes, axis)
 		case strings.HasPrefix(e, skipKeyPrefix):
-			key, filters, err := parseSkipBehavior(strings.TrimPrefix(e, skipKeyPrefix))
+			behaviorName, filters, err := parseSkipBehavior(strings.TrimPrefix(e, skipKeyPrefix))
 			if err != nil {
 				return nil, fmt.Errorf("failed to parse filters from %q: %v", e, err)
 			}
-			filterMap[key] = filters
+			filterMap[behaviorName] = filters
 		case strings.HasPrefix(e, behaviorKeyPrefix):
 			behavior := parseBehavior(strings.TrimPrefix(e, behaviorKeyPrefix))
 			behaviors = append(behaviors, behavior)
@@ -136,12 +135,14 @@ func parseSkipBehavior(d string) (string, []Filter, error) {
 		}
 		for _, rawMatch := range rawMatches {
 			tuple := strings.SplitN(rawMatch, ":", 2)
-			tuple = trimCollection(tuple)
 			if len(tuple) != 2 {
-				return "", nil, fmt.Errorf("match %q in input %s is not of form 'key:value'", rawMatch, d)
+				return "", nil, fmt.Errorf("match %q in input %q is not of form 'key:value'", rawMatch, d)
 			}
-			axisName := tuple[0]
-			axisValue := tuple[1]
+			axisName := strings.TrimSpace(tuple[0])
+			axisValue := strings.TrimSpace(tuple[1])
+			if axisName == "" || axisValue == "" {
+				return "", nil, fmt.Errorf("match %q in input %q is empty", rawMatch, d)
+			}
 			filter.AxisMatches = append(filter.AxisMatches, AxisMatch{Name: axisName, Value: axisValue})
 		}
 		filters = append(filters, filter)
@@ -169,11 +170,11 @@ func validateConfig(config *Config) error {
 	axes := config.Axes.Index()
 	for _, behavior := range config.Behaviors {
 		if _, ok := axes[behavior.ClientAxis]; !ok {
-			return errors.New("can't find AXIS environment for: " + behavior.ClientAxis)
+			return fmt.Errorf("can't find AXIS environment for: " + behavior.ClientAxis)
 		}
 		for _, param := range behavior.ParamsAxes {
 			if _, ok := axes[param]; !ok {
-				return errors.New("can't find AXIS environment for: " + param)
+				return fmt.Errorf("can't find AXIS environment for: " + param)
 			}
 		}
 	}
