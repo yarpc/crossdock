@@ -256,6 +256,13 @@ func TestParseSkipBehavior(t *testing.T) {
 			wantError:        fmt.Errorf("match \" :\" in input \"x= :\" is empty"),
 		},
 		{
+			give:             "x=  :  ",
+			desc:             "invalid filters",
+			wantFilters:      nil,
+			wantBehaviorName: "",
+			wantError:        fmt.Errorf("match \"  :  \" in input \"x=  :  \" is empty"),
+		},
+		{
 			give:             "x=     :",
 			desc:             "invalid filters",
 			wantFilters:      nil,
