@@ -170,11 +170,11 @@ func validateConfig(config *Config) error {
 	axes := config.Axes.Index()
 	for _, behavior := range config.Behaviors {
 		if _, ok := axes[behavior.ClientAxis]; !ok {
-			return fmt.Errorf("can't find AXIS environment for: %s" + behavior.ClientAxis)
+			return fmt.Errorf("can't find AXIS environment for: %s", behavior.ClientAxis)
 		}
 		for _, param := range behavior.ParamsAxes {
 			if _, ok := axes[param]; !ok {
-				return fmt.Errorf("can't find AXIS environment for: %s" + param)
+				return fmt.Errorf("can't find AXIS environment for: %s", param)
 			}
 		}
 	}

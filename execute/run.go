@@ -50,7 +50,7 @@ func executeTestCase(testCase plan.TestCase) TestResponse {
 			TestCase: testCase,
 			Results: []Result{{
 				Status: Skipped,
-				Output: fmt.Sprintf("Skipped %s", testCase.SkipReason),
+				Output: fmt.Sprintf("Skipped (%s)", testCase.SkipReason),
 			}},
 		}
 	}

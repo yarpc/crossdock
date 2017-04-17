@@ -75,7 +75,7 @@ func buildTestCases(plan *Plan) []TestCase {
 					for _, match := range filter.AxisMatches {
 						formattedMatches = append(formattedMatches, fmt.Sprintf("%s:%s", match.Name, match.Value))
 					}
-					t.SkipReason = fmt.Sprintf("Pruned by SKIP_%s=%s", strings.ToUpper(behavior.Name), strings.Join(formattedMatches, "+"))
+					t.SkipReason = fmt.Sprintf("SKIP_%s=%s", strings.ToUpper(behavior.Name), strings.Join(formattedMatches, "+"))
 					break
 				}
 			}
