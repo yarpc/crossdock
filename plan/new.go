@@ -62,17 +62,10 @@ func buildTestCases(plan *Plan) []TestCase {
 
 			for _, filter := range behavior.Filters {
 				// Each filter should be a complete match.
-				matchCnt := 0
-				for _, match := range filter.AxisMatches {
-					if (match.Name == behavior.ClientAxis && match.Value == client) ||
-						testArgs[match.Name] == match.Value {
-						matchCnt++
-					}
-				}
-				if matchCnt == len(filter.AxisMatches) {
+				if filter.Matches(testArgs) {
 					t.Skip = true
 					var formattedMatches []string
-					for _, match := range filter.AxisMatches {
+					for _, match := range filter.Matchers {
 						formattedMatches = append(formattedMatches, fmt.Sprintf("%s:%s", match.Name, match.Value))
 					}
 					t.SkipReason = fmt.Sprintf("SKIP_%s=%s", strings.ToUpper(behavior.Name), strings.Join(formattedMatches, "+"))

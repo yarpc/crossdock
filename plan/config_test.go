@@ -68,12 +68,12 @@ func TestReadConfigFromEnviron(t *testing.T) {
 			ParamsAxes: []string{"server", "transport"},
 			Filters: []Filter{
 				Filter{
-					AxisMatches: []AxisMatch{
-						AxisMatch{
+					Matchers: []AxisMatcher{
+						AxisMatcher{
 							Name:  "client",
 							Value: "yarpc-go",
 						},
-						AxisMatch{
+						AxisMatcher{
 							Name:  "transport",
 							Value: "tchannel",
 						},
@@ -143,16 +143,16 @@ func TestParseSkipBehavior(t *testing.T) {
 		wantError        error
 	}{
 		{
+			desc: "single filter",
 			give: "foo=client:c+server:b",
-			desc: "single filter.",
 			wantFilters: []Filter{
 				{
-					AxisMatches: []AxisMatch{
-						AxisMatch{
+					Matchers: []AxisMatcher{
+						AxisMatcher{
 							Name:  "client",
 							Value: "c",
 						},
-						AxisMatch{
+						AxisMatcher{
 							Name:  "server",
 							Value: "b",
 						},
@@ -160,23 +160,22 @@ func TestParseSkipBehavior(t *testing.T) {
 				},
 			},
 			wantBehaviorName: "foo",
-			wantError:        nil,
 		},
 		{
+			desc: "multiple filters",
 			give: "x=a:b,c:d",
-			desc: "multiple filters.",
 			wantFilters: []Filter{
 				{
-					AxisMatches: []AxisMatch{
-						AxisMatch{
+					Matchers: []AxisMatcher{
+						AxisMatcher{
 							Name:  "a",
 							Value: "b",
 						},
 					},
 				},
 				{
-					AxisMatches: []AxisMatch{
-						AxisMatch{
+					Matchers: []AxisMatcher{
+						AxisMatcher{
 							Name:  "c",
 							Value: "d",
 						},
@@ -184,19 +183,18 @@ func TestParseSkipBehavior(t *testing.T) {
 				},
 			},
 			wantBehaviorName: "x",
-			wantError:        nil,
 		},
 		{
+			desc: "single filter testing name separation",
 			give: "foo=client:weird:name+server:b",
-			desc: "single filter testing name separation.",
 			wantFilters: []Filter{
 				{
-					AxisMatches: []AxisMatch{
-						AxisMatch{
+					Matchers: []AxisMatcher{
+						AxisMatcher{
 							Name:  "client",
 							Value: "weird:name",
 						},
-						AxisMatch{
+						AxisMatcher{
 							Name:  "server",
 							Value: "b",
 						},
@@ -204,70 +202,56 @@ func TestParseSkipBehavior(t *testing.T) {
 				},
 			},
 			wantBehaviorName: "foo",
-			wantError:        nil,
 		},
 		{
-			give:             "x=a:b,,c:d",
-			desc:             "invalid filters",
-			wantFilters:      nil,
-			wantBehaviorName: "",
-			wantError:        fmt.Errorf("match \"\" in input \"x=a:b,,c:d\" is not of form 'key:value'"),
+			desc:      "invalid: empty filter",
+			give:      "x=a:b,,c:d",
+			wantError: fmt.Errorf("invalid matcher \"\" in input \"x=a:b,,c:d\" is not of form 'key:value'"),
 		},
 		{
-			give:             "x",
-			desc:             "invalid filters",
-			wantFilters:      nil,
-			wantBehaviorName: "",
-			wantError:        fmt.Errorf("missing '=' in the input: \"x\""),
+			desc:      "invalid filters",
+			give:      "x",
+			wantError: fmt.Errorf("missing '=' in the input: \"x\""),
 		},
 		{
-			give:             "  x    ",
-			desc:             "invalid filters",
-			wantFilters:      nil,
-			wantBehaviorName: "",
-			wantError:        fmt.Errorf("missing '=' in the input: \"  x    \""),
+			desc:      "invalid filters",
+			give:      "",
+			wantError: fmt.Errorf("missing '=' in the input: \"\""),
 		},
 		{
-			give:             "x=:",
-			desc:             "invalid filters",
-			wantFilters:      nil,
-			wantBehaviorName: "",
-			wantError:        fmt.Errorf("match \":\" in input \"x=:\" is empty"),
+			desc:      "invalid filters",
+			give:      "  x    ",
+			wantError: fmt.Errorf("missing '=' in the input: \"  x    \""),
 		},
 		{
-			give:             "x=",
-			desc:             "invalid filters",
-			wantFilters:      nil,
-			wantBehaviorName: "",
-			wantError:        fmt.Errorf("match \"\" in input \"x=\" is not of form 'key:value'"),
+			desc:      "invalid: empty matcher",
+			give:      "x=:",
+			wantError: fmt.Errorf("invalid matcher \":\": axis name and value are required"),
 		},
 		{
-			give:             "x  =  ",
-			desc:             "invalid filters",
-			wantFilters:      nil,
-			wantBehaviorName: "",
-			wantError:        fmt.Errorf("match \"  \" in input \"x  =  \" is not of form 'key:value'"),
+			desc:      "invalid filters",
+			give:      "x=",
+			wantError: fmt.Errorf("invalid matcher \"\" in input \"x=\" is not of form 'key:value'"),
 		},
 		{
-			give:             "x= :",
-			desc:             "invalid filters",
-			wantFilters:      nil,
-			wantBehaviorName: "",
-			wantError:        fmt.Errorf("match \" :\" in input \"x= :\" is empty"),
+			desc:      "invalid filters",
+			give:      "x  =  ",
+			wantError: fmt.Errorf("invalid matcher \"  \" in input \"x  =  \" is not of form 'key:value'"),
 		},
 		{
-			give:             "x=  :  ",
-			desc:             "invalid filters",
-			wantFilters:      nil,
-			wantBehaviorName: "",
-			wantError:        fmt.Errorf("match \"  :  \" in input \"x=  :  \" is empty"),
+			desc:      "invalid: empty matcher",
+			give:      "x= :",
+			wantError: fmt.Errorf("invalid matcher \" :\": axis name and value are required"),
 		},
 		{
-			give:             "x=     :",
-			desc:             "invalid filters",
-			wantFilters:      nil,
-			wantBehaviorName: "",
-			wantError:        fmt.Errorf("match \"     :\" in input \"x=     :\" is empty"),
+			desc:      "invalid: empty matcher",
+			give:      "x=  :  ",
+			wantError: fmt.Errorf("invalid matcher \"  :  \": axis name and value are required"),
+		},
+		{
+			desc:      "invalid: empty matcher",
+			give:      "x=     :",
+			wantError: fmt.Errorf("invalid matcher \"     :\": axis name and value are required"),
 		},
 	}
 

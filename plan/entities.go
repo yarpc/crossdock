@@ -59,15 +59,33 @@ func (a Axes) Index() map[string]Axis {
 }
 
 // Filter specifies criteria for skipping specific test cases of a behavior.
-// All test cases for a behavior where all parameter values match the AxisMatches will be skipped.
+// All test cases for a behavior where all parameter values match the AxisMatcher will be skipped.
 type Filter struct {
-	AxisMatches []AxisMatch
+	Matchers []AxisMatcher
 }
 
-// AxisMatch matches an axis name to a give value.
-type AxisMatch struct {
+// Matches returns true if all matchers associated with this Filter match the given test arguments.
+func (f Filter) Matches(testArgs TestClientArgs) bool {
+	for _, match := range f.Matchers {
+		if !match.Matches(testArgs) {
+			return false
+		}
+	}
+	return true
+}
+
+// AxisMatcher matches an axis name to a give value.
+type AxisMatcher struct {
 	Name  string
 	Value string
+}
+
+// Matches returns true if the given TestClientArgs match this AxisMatcher.
+func (a AxisMatcher) Matches(args TestClientArgs) bool {
+	if args[a.Name] == a.Value {
+		return true
+	}
+	return false
 }
 
 // Behavior represents the test behavior that will be triggered by crossdock.
@@ -98,13 +116,16 @@ func (b Behaviors) Len() int           { return len(b) }
 func (b Behaviors) Swap(i, j int)      { b[i], b[j] = b[j], b[i] }
 func (b Behaviors) Less(i, j int) bool { return b[i].Name < b[j].Name }
 
-func (b Behaviors) validateAndApplyFilters(filtersByBehavior map[string][]Filter) error {
+func (b Behaviors) attachFilters(filtersByBehavior map[string][]Filter) error {
 	for i, behavior := range b {
 		filters := filtersByBehavior[behavior.Name]
 		for _, filter := range filters {
-			for _, axisToMatch := range filter.AxisMatches {
+			if len(filters) == 0 {
+				continue
+			}
+			for _, axisToMatch := range filter.Matchers {
 				if !behavior.HasAxis(axisToMatch.Name) {
-					return fmt.Errorf("%v is not defined in axis for %v", axisToMatch, behavior.Name)
+					return fmt.Errorf("%q is not a parameter for behavior %q", axisToMatch, behavior.Name)
 				}
 			}
 		}

@@ -79,7 +79,7 @@ func ReadConfigFromEnviron() (*Config, error) {
 	}
 	sort.Sort(axes)
 	sort.Sort(behaviors)
-	if err := behaviors.validateAndApplyFilters(filterMap); err != nil {
+	if err := behaviors.attachFilters(filterMap); err != nil {
 		return nil, fmt.Errorf("failed to validate filters: %v", err)
 	}
 
@@ -131,19 +131,19 @@ func parseSkipBehavior(d string) (string, []Filter, error) {
 	for _, rawFilter := range rawFilters {
 		rawMatches := strings.Split(rawFilter, "+")
 		filter := Filter{
-			AxisMatches: make([]AxisMatch, 0, len(rawMatches)),
+			Matchers: make([]AxisMatcher, 0, len(rawMatches)),
 		}
 		for _, rawMatch := range rawMatches {
 			tuple := strings.SplitN(rawMatch, ":", 2)
 			if len(tuple) != 2 {
-				return "", nil, fmt.Errorf("match %q in input %q is not of form 'key:value'", rawMatch, d)
+				return "", nil, fmt.Errorf("invalid matcher %q in input %q is not of form 'key:value'", rawMatch, d)
 			}
 			axisName := strings.TrimSpace(tuple[0])
 			axisValue := strings.TrimSpace(tuple[1])
 			if axisName == "" || axisValue == "" {
-				return "", nil, fmt.Errorf("match %q in input %q is empty", rawMatch, d)
+				return "", nil, fmt.Errorf("invalid matcher %q: axis name and value are required", rawMatch)
 			}
-			filter.AxisMatches = append(filter.AxisMatches, AxisMatch{Name: axisName, Value: axisValue})
+			filter.Matchers = append(filter.Matchers, AxisMatcher{Name: axisName, Value: axisValue})
 		}
 		filters = append(filters, filter)
 	}
